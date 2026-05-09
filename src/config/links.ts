@@ -12,6 +12,16 @@
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+/**
+ * Discriminant values for the three link types.
+ * Reference as LinkType.Button, LinkType.Card, LinkType.Social.
+ */
+export const LinkType = {
+  Button: "button",
+  Card: "card",
+  Social: "social",
+} as const;
+
 export type SocialPlatform =
   | "instagram"
   | "tiktok"
@@ -23,10 +33,25 @@ export type SocialPlatform =
   | "website";
 
 /**
- * A plain pill-shaped button — the simplest link type.
+ * Fields shared by all link types.
+ * followerCount is optional on buttons and social pills; required on cards.
  */
-export interface ButtonLink {
-  type: "button";
+interface LinkBase {
+  /**
+   * Follower / subscriber count for this link's platform (e.g. 17500 → "17.5K Followers").
+   * When the TikTok API is configured on a card, the live value overrides this.
+   */
+  followerCount?: number;
+  /**
+   * Display name shown before the formatted follower count, e.g. "♪ Sarah Bashir 🌟".
+   * Falls back to the name returned by the TikTok API when not set on a card.
+   */
+  displayName?: string;
+}
+
+/** A plain pill-shaped button — the simplest link type. */
+export interface ButtonLink extends LinkBase {
+  type: typeof LinkType.Button;
   /** Text shown inside the button */
   label: string;
   /** Destination URL */
@@ -50,13 +75,18 @@ export interface ButtonLink {
  * and set `thumbnail` to a local path (e.g. "/tiktok-thumb.jpg"). That image
  * will fill the full card instead of the stacked layout.
  */
-export interface CardLink {
-  type: "card";
+export interface CardLink extends LinkBase {
+  type: typeof LinkType.Card;
   platform: SocialPlatform;
   /** Card headline (e.g. "TikTok") */
   label: string;
-  /** Smaller text below the headline (e.g. follower count) */
-  subtitle: string;
+  /**
+   * Raw follower count shown in the card footer (e.g. 17500 → "17.5K Followers").
+   * Used as the static fallback when the TikTok API is not configured.
+   * When TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET / TIKTOK_REFRESH_TOKEN are set
+   * as env vars, the live count from the API is used instead.
+   */
+  followerCount: number;
   /**
    * Up to 3 public TikTok video URLs for the stacked thumbnail preview.
    * Thumbnails are fetched at build time — no API key required.
@@ -81,12 +111,9 @@ export interface CardLink {
   url: string;
 }
 
-/**
- * A pill button that shows a small circular avatar on the left — ideal for
- * Instagram, Twitter, etc., to show the social profile picture.
- */
-export interface SocialPillLink {
-  type: "social";
+/** A pill button that shows a small circular avatar on the left — ideal for Instagram, Twitter, etc. */
+export interface SocialPillLink extends LinkBase {
+  type: typeof LinkType.Social;
   platform: SocialPlatform;
   /** Text shown inside the button */
   label: string;
@@ -177,7 +204,7 @@ export const config: SiteConfig = {
   links: [
     // 1 · Plain button
     {
-      type: "button",
+      type: LinkType.Button,
       label: "Shop gluten-free ice cream treats by 10% off",
       url: "#", // ← REPLACE with real URL before deploying
     },
@@ -187,14 +214,15 @@ export const config: SiteConfig = {
     // Thumbnails are fetched automatically at build time — no API key needed.
     // Leave the array empty to show the stacked-phone placeholder instead.
     {
-      type: "card",
+      type: LinkType.Card,
       platform: "tiktok",
       label: "TikTok",
-      subtitle: "♪ Sarah Bashir 🌟 · 17.5K Followers",
+      displayName: "♪ Sarah Bashir 🌟",
+      followerCount: 17500,
       videos: [
-        // "https://www.tiktok.com/@sarah.rh.bashir/video/PASTE_VIDEO_ID_HERE",
-        // "https://www.tiktok.com/@sarah.rh.bashir/video/PASTE_VIDEO_ID_HERE",
-        // "https://www.tiktok.com/@sarah.rh.bashir/video/PASTE_VIDEO_ID_HERE",
+        "https://www.tiktok.com/@sarah.rh.bashir/video/7635667231413832968",
+        "https://www.tiktok.com/@sarah.rh.bashir/video/7635417474216807687",
+        "https://www.tiktok.com/@sarah.rh.bashir/video/7635386293085539592",
       ],
       thumbnail: "", // fallback single image (optional)
       url: "https://www.tiktok.com/@sarah.rh.bashir",
@@ -202,18 +230,20 @@ export const config: SiteConfig = {
 
     // 3 · Instagram social pill
     {
-      type: "social",
+      type: LinkType.Social,
       platform: "instagram",
       label: "Instagram",
       avatar: "/avatar.svg",
       url: "https://www.instagram.com/sarah.rh.bashir",
+      followerCount: 8700
     },
     {
-      type: "social",
+      type: LinkType.Social,
       platform: "youtube",
       label: "YouTube",
       avatar: "/avatar.svg",
       url: "https://www.youtube.com/@sarah.rh.bashir",
+      followerCount: 445
     },
   ],
 
@@ -232,7 +262,7 @@ export const config: SiteConfig = {
     title: "Sarah Bashir | Links",
     description: "Creating our dream life, one brick at a time! 🏠✨",
     // Update these before deploying:
-    url: "https://your-username.github.io/next-links",
-    repoUrl: "https://github.com/your-username/next-links",
+    url: "https://Bashiruu1.github.io/next-links",
+    repoUrl: "https://github.com/Bashiruu1/next-links",
   },
 };

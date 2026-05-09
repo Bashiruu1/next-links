@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { SocialPillLink, SiteConfig } from "@/config/links";
+import { formatFollowerCount } from "@/lib/tiktok-api";
 
 interface SocialPillProps {
   item: SocialPillLink;
@@ -41,12 +42,16 @@ export default function SocialPill({ item, theme }: SocialPillProps) {
         <div style={{ width: 36, height: 36 }} className="shrink-0" />
       )}
 
-      {/* Label — centred in the remaining space */}
-      <span
-        className="flex-1 text-center text-sm font-medium"
-        style={{ color: theme.buttonText }}
-      >
-        {item.label}
+      {/* Label (+ optional follower count) — centred in the remaining space */}
+      <span className="flex-1 text-center flex flex-col leading-tight">
+        <span className="text-sm font-medium" style={{ color: theme.buttonText }}>
+          {item.label}
+        </span>
+        {item.followerCount !== undefined && (
+          <span className="text-xs mt-0.5" style={{ color: theme.subtextColor }}>
+            {formatFollowerCount(item.followerCount)} Followers
+          </span>
+        )}
       </span>
 
       {/* Three-dot menu indicator */}

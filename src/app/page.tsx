@@ -1,19 +1,22 @@
-import { config } from "@/config/links";
-import type { LinkItem } from "@/config/links";
+import { config, LinkType } from "@/config/links";
+import type { CardLink, LinkItem } from "@/config/links";
 import { fetchTikTokThumbnails } from "@/lib/tiktok";
+import { fetchTikTokApiData, formatFollowerCount } from "@/lib/tiktok-api";
+import type { TikTokApiResult } from "@/lib/tiktok-api";
 import ProfileHeader from "@/components/ProfileHeader";
 import LinkButton from "@/components/LinkButton";
 import TikTokCard from "@/components/TikTokCard";
 import SocialPill from "@/components/SocialPill";
 import TopBar from "@/components/TopBar";
 
-// ── Build-time thumbnail resolution ──────────────────────────────────────────
+// ── Build-time data resolution ────────────────────────────────────────────────
 //
-// Because this is a Next.js Server Component, all async work here runs at
-// `npm run build` time. The resulting HTML is fully static — no server needed.
+// All async work here runs at `npm run build` time — the result is baked into
+// static HTML. No server is needed at request time.
 //
-// Card items with a `videos` array will have their TikTok thumbnails fetched
-// from TikTok's public oEmbed API and baked into the HTML output.
+// Two data sources run in parallel:
+//   1. TikTok API v2 (when env vars are set) — live follower count + cover images
+//   2. TikTok oEmbed (fallback) — thumbnails from manually specified video URLs
 
 async function resolveCardThumbnails(
   links: LinkItem[]
@@ -22,8 +25,7 @@ async function resolveCardThumbnails(
 
   await Promise.all(
     links.map(async (link, index) => {
-      // TypeScript narrows `link` to CardLink here — no cast needed
-      if (link.type === "card" && link.videos?.length) {
+      if (link.type === LinkType.Card && link.videos?.length) {
         const thumbnails = await fetchTikTokThumbnails(link.videos);
         thumbnailMap.set(index, thumbnails);
       }
@@ -33,13 +35,23 @@ async function resolveCardThumbnails(
   return thumbnailMap;
 }
 
+function buildSubtitle(link: CardLink, apiData: TikTokApiResult | null): string {
+  const count = apiData?.followerCount ?? link.followerCount;
+  const name = link.displayName ?? apiData?.displayName ?? null;
+  const formatted = `${formatFollowerCount(count)} Followers`;
+  return name ? `${name} · ${formatted}` : formatted;
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function Home() {
   const { profile, socials, links, theme, meta } = config;
 
-  // Fetch TikTok thumbnails at build time (no-op if no videos configured)
-  const thumbnailMap = await resolveCardThumbnails(links);
+  // Both fetches run in parallel at build time
+  const [tikTokApiData, thumbnailMap] = await Promise.all([
+    fetchTikTokApiData(),       // null when env vars not set
+    resolveCardThumbnails(links), // oEmbed fallback
+  ]);
 
   return (
     <main className="links-page min-h-screen w-full">
@@ -56,23 +68,29 @@ export default async function Home() {
           {links.map((link, index) => {
             const key = `${link.type}-${link.url}`;
 
-            if (link.type === "button") {
+            if (link.type === LinkType.Button) {
               return <LinkButton key={key} item={link} theme={theme} />;
             }
 
-            if (link.type === "card") {
-              // TypeScript narrows link to CardLink after the type check above
+            if (link.type === LinkType.Card) {
+              const isTikTok = link.platform === "tiktok";
+              // API covers take priority; fall back to oEmbed thumbnails
+              const resolvedThumbnails =
+                isTikTok && tikTokApiData
+                  ? tikTokApiData.videoCoverUrls
+                  : thumbnailMap.get(index);
               return (
                 <TikTokCard
                   key={key}
                   item={link}
                   theme={theme}
-                  resolvedThumbnails={thumbnailMap.get(index)}
+                  subtitle={buildSubtitle(link, isTikTok ? tikTokApiData : null)}
+                  resolvedThumbnails={resolvedThumbnails}
                 />
               );
             }
 
-            if (link.type === "social") {
+            if (link.type === LinkType.Social) {
               return <SocialPill key={key} item={link} theme={theme} />;
             }
 

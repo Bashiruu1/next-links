@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { config } from "@/config/links";
+import { config, LinkType } from "@/config/links";
 import type { ButtonLink, CardLink, SocialPillLink } from "@/config/links";
 
 // ── profile ───────────────────────────────────────────────────────────────────
@@ -45,7 +45,7 @@ describe("config.links", () => {
   });
 
   it("every item has a valid type", () => {
-    const validTypes = new Set(["button", "card", "social"]);
+    const validTypes = new Set([LinkType.Button, LinkType.Card, LinkType.Social]);
     config.links.forEach((link) => {
       expect(validTypes.has(link.type)).toBe(true);
     });
@@ -53,26 +53,27 @@ describe("config.links", () => {
 
   it("button items have a label and a url", () => {
     config.links
-      .filter((l): l is ButtonLink => l.type === "button")
+      .filter((l): l is ButtonLink => l.type === LinkType.Button)
       .forEach((link) => {
         expect(link.label.trim()).not.toBe("");
         expect(link.url).toBeTruthy();
       });
   });
 
-  it("card items have a label, subtitle, and url", () => {
+  it("card items have a label, followerCount, and url", () => {
     config.links
-      .filter((l): l is CardLink => l.type === "card")
+      .filter((l): l is CardLink => l.type === LinkType.Card)
       .forEach((link) => {
         expect(link.label.trim()).not.toBe("");
-        expect(link.subtitle.trim()).not.toBe("");
+        expect(typeof link.followerCount).toBe("number");
+        expect(link.followerCount).toBeGreaterThanOrEqual(0);
         expect(link.url).toBeTruthy();
       });
   });
 
   it("card items with videos have an array of strings", () => {
     config.links
-      .filter((l): l is CardLink => l.type === "card")
+      .filter((l): l is CardLink => l.type === LinkType.Card)
       .forEach((link) => {
         if (link.videos !== undefined) {
           expect(Array.isArray(link.videos)).toBe(true);
@@ -83,7 +84,7 @@ describe("config.links", () => {
 
   it("social items have a platform, label, and url", () => {
     config.links
-      .filter((l): l is SocialPillLink => l.type === "social")
+      .filter((l): l is SocialPillLink => l.type === LinkType.Social)
       .forEach((link) => {
         expect(link.platform).toBeTruthy();
         expect(link.label.trim()).not.toBe("");

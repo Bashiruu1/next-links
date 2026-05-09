@@ -1,4 +1,5 @@
 import type { ButtonLink, SiteConfig } from "@/config/links";
+import { formatFollowerCount } from "@/lib/tiktok-api";
 
 interface LinkButtonProps {
   item: ButtonLink;
@@ -26,8 +27,13 @@ export default function LinkButton({ item, theme }: LinkButtonProps) {
       {/* Spacer so label stays centred */}
       <span className="w-4 shrink-0" />
 
-      <span className="flex-1 text-center leading-snug">
-        {item.label}
+      <span className="flex-1 text-center flex flex-col leading-tight">
+        <span>{item.label}</span>
+        {item.followerCount !== undefined && (
+          <span className="text-xs mt-0.5 opacity-70">
+            {formatFollowerCount(item.followerCount)} Followers
+          </span>
+        )}
       </span>
 
       {/* Three-dot menu indicator */}

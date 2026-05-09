@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import SocialPill from "@/components/SocialPill";
+import { LinkType } from "@/config/links";
 import type { SocialPillLink, SiteConfig } from "@/config/links";
 
 const theme: SiteConfig["theme"] = {
@@ -13,7 +14,7 @@ const theme: SiteConfig["theme"] = {
 };
 
 const item: SocialPillLink = {
-  type: "social",
+  type: LinkType.Social,
   platform: "instagram",
   label: "Instagram",
   avatar: "/avatar.svg",
@@ -61,5 +62,20 @@ describe("SocialPill", () => {
     expect(screen.getByRole("link")).toHaveStyle({
       backgroundColor: theme.buttonBg,
     });
+  });
+
+  it("does not render a follower count when followerCount is not set", () => {
+    render(<SocialPill item={item} theme={theme} />);
+    expect(screen.queryByText(/Followers/)).not.toBeInTheDocument();
+  });
+
+  it("renders a formatted follower count when followerCount is set", () => {
+    render(<SocialPill item={{ ...item, followerCount: 17500 }} theme={theme} />);
+    expect(screen.getByText("17.5K Followers")).toBeInTheDocument();
+  });
+
+  it("formats whole-thousand follower counts without a decimal", () => {
+    render(<SocialPill item={{ ...item, followerCount: 1000 }} theme={theme} />);
+    expect(screen.getByText("1K Followers")).toBeInTheDocument();
   });
 });

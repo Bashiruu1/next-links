@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import LinkButton from "@/components/LinkButton";
+import { LinkType } from "@/config/links";
 import type { ButtonLink, SiteConfig } from "@/config/links";
 
 const theme: SiteConfig["theme"] = {
@@ -13,7 +14,7 @@ const theme: SiteConfig["theme"] = {
 };
 
 const item: ButtonLink = {
-  type: "button",
+  type: LinkType.Button,
   label: "Shop gluten-free ice cream treats by 10% off",
   url: "https://example.com/shop",
 };
@@ -58,5 +59,15 @@ describe("LinkButton", () => {
     const { container } = render(<LinkButton item={item} theme={theme} />);
     const circles = container.querySelectorAll("circle");
     expect(circles.length).toBe(3);
+  });
+
+  it("does not render a follower count when followerCount is not set", () => {
+    render(<LinkButton item={item} theme={theme} />);
+    expect(screen.queryByText(/Followers/)).not.toBeInTheDocument();
+  });
+
+  it("renders a formatted follower count when followerCount is set", () => {
+    render(<LinkButton item={{ ...item, followerCount: 5200 }} theme={theme} />);
+    expect(screen.getByText("5.2K Followers")).toBeInTheDocument();
   });
 });

@@ -25,7 +25,7 @@ Live demo: *(add your URL here)*
 ## Quick start
 
 ```bash
-git clone https://github.com/your-username/next-links
+git clone https://github.com/Bashiruu1/next-links
 cd next-links
 rm next.config.js          # remove the JS stub; next.config.ts is the real one
 npm install
