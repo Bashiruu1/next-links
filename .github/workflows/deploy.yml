@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 24
           cache: npm
@@ -44,7 +44,7 @@ jobs:
       # Skipped automatically when running locally via `act` (ACT env var is set).
       - name: Deploy to GitHub Pages
         if: ${{ !env.ACT }}
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4b09552702d0b65573696410d4707c765da2630b
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
