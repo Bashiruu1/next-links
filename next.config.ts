@@ -11,8 +11,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // Required for GitHub Pages sub-path deployment: https://bashiruu1.github.io/next-links
-  basePath: "/next-links",
+  // Set automatically in CI; omitted locally so `npx serve out` works without path prefix.
+  basePath: process.env.GITHUB_ACTIONS ? "/next-links" : "",
 };
 
 export default nextConfig;
