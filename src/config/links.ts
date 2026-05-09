@@ -208,6 +208,13 @@ export const config: SiteConfig = {
       avatar: "/avatar.svg",
       url: "https://www.instagram.com/sarah.rh.bashir",
     },
+    {
+      type: "social",
+      platform: "youtube",
+      label: "YouTube",
+      avatar: "/avatar.svg",
+      url: "https://www.youtube.com/@sarah.rh.bashir",
+    },
   ],
 
   // ── Theme ─────────────────────────────────────────────────────────────────
