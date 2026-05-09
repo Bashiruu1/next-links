@@ -11,9 +11,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // Uncomment and set this if deploying to a GitHub Pages sub-path, e.g.
-  // https://username.github.io/next-links
-  // basePath: "/next-links",
+  // Required for GitHub Pages sub-path deployment: https://bashiruu1.github.io/next-links
+  basePath: "/next-links",
 };
 
 export default nextConfig;
