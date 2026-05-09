@@ -19,10 +19,47 @@
 
 # production
 /build
+/dist
+
+# cache
+.turbo/
+.eslintcache
+.stylelintcache
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# IDE / editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.iml
+nbproject/
+
+# leftover build workarounds
+.babelrc
+next.config.js
 
 # debug
 npm-debug.log*

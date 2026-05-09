@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# next-links · docker-compose.yml
+#
+# Services:
+#   dev      Hot-reload dev server at http://localhost:3000
+#   test     Run Vitest once and exit (non-zero exit = test failure)
+#   build    Produce the static /out folder, then exit
+#   runner   Serve the built static site with nginx at http://localhost:8080
+#
+# Quick-start:
+#   docker compose up dev          # hack on the app
+#   docker compose run --rm test   # run tests
+#   docker compose run --rm build  # build static output to ./out
+#   docker compose up runner       # preview the production build locally
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── dev ──────────────────────────────────────────────────────────────────────
+  dev:
+    build:
+      context: .
+      target: dev
+      # On Apple Silicon you can remove the platform line; Docker Desktop handles it.
+      # For CI parity, force linux/amd64.
+      # platform: linux/amd64
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source so edits are reflected without rebuilding the image.
+      - .:/app
+      # Keep node_modules inside the container so the host version doesn't
+      # overwrite the linux binaries.
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true   # needed for file-watch on some macOS setups
+
+  # ── test ─────────────────────────────────────────────────────────────────────
+  test:
+    build:
+      context: .
+      target: test
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=test
+    # Exit code propagates: 0 = all passed, non-zero = failures.
+
+  # ── build ─────────────────────────────────────────────────────────────────────
+  build:
+    build:
+      context: .
+      target: builder
+    volumes:
+      # Expose the /out folder to the host after a successful build.
+      - ./out:/app/out
+
+  # ── runner ────────────────────────────────────────────────────────────────────
+  runner:
+    build:
+      context: .
+      target: runner
+    ports:
+      - "8080:80"
+    depends_on:
+      build:
+        condition: service_completed_successfully
+
+volumes:
+  node_modules:

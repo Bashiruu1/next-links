@@ -1,0 +1,21 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .actrc — local GitHub Actions runner config (https://github.com/nektos/act)
+#
+# Usage:
+#   act                         # simulate a push event
+#   act push                    # same, explicit
+#   act workflow_dispatch       # trigger the manual run
+#   act -j build-and-deploy     # run only the build-and-deploy job
+#   act --list                  # list all available workflows/jobs
+#
+# Apple Silicon (M1/M2/M3) note:
+#   The catthehacker images are multi-arch, but if you hit SWC download errors
+#   add: --container-architecture linux/amd64
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Use the medium Ubuntu runner image (~500 MB vs ~18 GB for the full image).
+# "act-latest" includes Node, npm, and common CLI tools — sufficient for this project.
+-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+
+# Reuse containers between runs for faster iteration.
+--reuse

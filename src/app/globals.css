@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
+:root {
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Base reset ──────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* ── Grid background (matches the crosshatch on sarah.bashir's Linktree) ── */
+/*
+   The .links-page class applies the themed background to the main element.
+   Both the background colour and grid-line colour come from the config
+   via inline CSS variables set on the element (see page.tsx).
+   Fallback values match the default theme.
+*/
+.links-page {
+  background-color: #3a2218;
+  background-image:
+    linear-gradient(rgba(200, 160, 120, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 160, 120, 0.10) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Tailwind theme overrides ────────────────────────────────────────────── */
+@theme inline {
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+}
