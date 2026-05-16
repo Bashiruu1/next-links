@@ -44,7 +44,7 @@ jobs:
       # Skipped automatically when running locally via `act` (ACT env var is set).
       - name: Deploy to GitHub Pages
         if: ${{ !env.ACT }}
-        uses: peaceiris/actions-gh-pages@4b09552702d0b65573696410d4707c765da2630b
+        uses: peaceiris/actions-gh-pages@e589cdfe05d62b472d9fb7faf5efb6c826d9ab11
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
