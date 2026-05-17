@@ -56,6 +56,11 @@ export interface ButtonLink extends LinkBase {
   label: string;
   /** Destination URL */
   url: string;
+  /**
+   * Optional small circular image shown on the left side of the button.
+   * Place the file in /public and use a leading slash, e.g. "/avatar.jpg"
+   */
+  image?: string;
 }
 
 /**
@@ -205,8 +210,14 @@ export const config: SiteConfig = {
     // 1 · Plain button
     {
       type: LinkType.Button,
+      label: "Code: SARAH5 to save on AfroPuppy Yoga",
+      url: "https://afropuppyyoga.ca/?srsltid=AfmBOooJKtZe-lSmBUmwc2BD5mJn8zAhwSfq8iyTHVnGySCAhhOdY98m", // ← REPLACE with real URL before deploying
+      image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663446228701/pFRlGBKuUoljEWjn.png"
+    },
+    {
+      type: LinkType.Button,
       label: "Shop gluten-free ice cream treats by 10% off",
-      url: "#", // ← REPLACE with real URL before deploying
+      url: "https://shop.fourall.ca/?ref=gdklprrw", // ← REPLACE with real URL before deploying
     },
 
     // 2 · TikTok feature card
@@ -233,7 +244,7 @@ export const config: SiteConfig = {
       type: LinkType.Social,
       platform: "instagram",
       label: "Instagram",
-      avatar: "/avatar.svg",
+      avatar: "https://ugc.production.linktr.ee/ed88d7de-1266-4309-ab0b-e1f472e8a526_589307434-17881643667422694-2500623199717504514-n.jpeg?io=true&size=thumbnail-stack_v1_0",
       url: "https://www.instagram.com/sarah.rh.bashir",
       followerCount: 8700
     },

@@ -7,15 +7,16 @@ interface LinkButtonProps {
 }
 
 export default function LinkButton({ item, theme }: LinkButtonProps) {
+  const hasImage = item.image && item.image.trim() !== "";
+
   return (
     <a
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
       className="
-        flex items-center justify-between w-full
-        rounded-full px-5 py-3.5
-        text-sm font-medium text-center
+        flex items-center w-full
+        rounded-full px-3 py-3
         transition-all duration-150
         hover:brightness-110 active:scale-[0.98]
       "
@@ -24,11 +25,20 @@ export default function LinkButton({ item, theme }: LinkButtonProps) {
         color: theme.buttonText,
       }}
     >
-      {/* Spacer so label stays centred */}
-      <span className="w-4 shrink-0" />
+      {/* Left image */}
+      {hasImage ? (
+        <img
+          src={item.image}
+          alt={item.label}
+          className="rounded-full object-cover shrink-0"
+          style={{ width: 36, height: 36 }}
+        />
+      ) : (
+        <div style={{ width: 36, height: 36 }} className="shrink-0" />
+      )}
 
       <span className="flex-1 text-center flex flex-col leading-tight">
-        <span>{item.label}</span>
+        <span className="text-sm font-medium">{item.label}</span>
         {item.followerCount !== undefined && (
           <span className="text-xs mt-0.5 opacity-70">
             {formatFollowerCount(item.followerCount)} Followers
@@ -38,7 +48,7 @@ export default function LinkButton({ item, theme }: LinkButtonProps) {
 
       {/* Three-dot menu indicator */}
       <span
-        className="w-5 shrink-0 flex items-center justify-end opacity-60"
+        className="opacity-60 shrink-0 pr-1 flex items-center"
         aria-hidden="true"
       >
         <svg viewBox="0 0 24 24" fill="currentColor" width={16} height={16}>
