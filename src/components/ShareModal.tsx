@@ -140,6 +140,7 @@ export default function ShareModal({ username, repoUrl, onClose }: ShareModalPro
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
       style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
       onClick={(e) => {
+        e.stopPropagation();
         if (e.target === overlayRef.current) onClose();
       }}
     >

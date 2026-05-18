@@ -58,10 +58,8 @@ describe("SocialPill", () => {
   });
 
   it("applies the theme buttonBg as background-color", () => {
-    render(<SocialPill item={item} theme={theme} />);
-    expect(screen.getByRole("link")).toHaveStyle({
-      backgroundColor: theme.buttonBg,
-    });
+    const { container } = render(<SocialPill item={item} theme={theme} />);
+    expect(container.firstChild).toHaveStyle({ backgroundColor: theme.buttonBg });
   });
 
   it("does not render a follower count when followerCount is not set", () => {

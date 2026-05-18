@@ -195,7 +195,7 @@ export const config: SiteConfig = {
     name: "Sarah Bashir",
     bio: "Creating our dream life, one brick at a time! 🏠✨",
     // Drop your photo into /public/avatar.jpg and update this path.
-    avatar: "/avatar.svg",
+    avatar: "https://ugc.production.linktr.ee/21394185-b95b-4177-aa0e-1a615db2aa74_IMG-0904.jpeg?io=true&size=avatar-v3_0",
     username: "sarah.bashir",
   },
 
@@ -247,15 +247,7 @@ export const config: SiteConfig = {
       avatar: "https://ugc.production.linktr.ee/ed88d7de-1266-4309-ab0b-e1f472e8a526_589307434-17881643667422694-2500623199717504514-n.jpeg?io=true&size=thumbnail-stack_v1_0",
       url: "https://www.instagram.com/sarah.rh.bashir",
       followerCount: 8700
-    },
-    {
-      type: LinkType.Social,
-      platform: "youtube",
-      label: "YouTube",
-      avatar: "/avatar.svg",
-      url: "https://www.youtube.com/@sarah.rh.bashir",
-      followerCount: 445
-    },
+    }
   ],
 
   // ── Theme ─────────────────────────────────────────────────────────────────

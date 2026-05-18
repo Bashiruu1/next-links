@@ -45,9 +45,8 @@ describe("LinkButton", () => {
   });
 
   it("applies the theme buttonBg as background-color", () => {
-    render(<LinkButton item={item} theme={theme} />);
-    const link = screen.getByRole("link");
-    expect(link).toHaveStyle({ backgroundColor: theme.buttonBg });
+    const { container } = render(<LinkButton item={item} theme={theme} />);
+    expect(container.firstChild).toHaveStyle({ backgroundColor: theme.buttonBg });
   });
 
   it("applies the theme buttonText as color", () => {
