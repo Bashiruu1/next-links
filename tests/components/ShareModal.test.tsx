@@ -4,7 +4,6 @@ import ShareModal from "@/components/ShareModal";
 
 const defaultProps = {
   username: "sarah.rh.bashir",
-  repoUrl: "https://github.com/test/next-links",
   onClose: vi.fn(),
 };
 
@@ -93,16 +92,4 @@ describe("ShareModal", () => {
     expect(document.body.style.overflow).toBe("");
   });
 
-  it("renders the CTA section with the username", () => {
-    render(<ShareModal {...defaultProps} />);
-    expect(
-      screen.getByText(`Join @${defaultProps.username} on next-links`)
-    ).toBeInTheDocument();
-  });
-
-  it("renders a 'Get it on GitHub' link pointing to repoUrl", () => {
-    render(<ShareModal {...defaultProps} />);
-    const link = screen.getByText("Get it on GitHub").closest("a");
-    expect(link).toHaveAttribute("href", defaultProps.repoUrl);
-  });
 });

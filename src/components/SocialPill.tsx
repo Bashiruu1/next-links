@@ -61,6 +61,7 @@ export default function SocialPill({ item, theme }: SocialPillProps) {
         title={item.label}
         color={theme.buttonText}
         className="mr-2"
+        shareOverlay={{ image: item.avatar }}
       />
     </div>
   );

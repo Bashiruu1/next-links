@@ -264,6 +264,7 @@ export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }
             title={item.label}
             color={theme.textColor}
             className="ml-2"
+            shareOverlay={{ image: resolvedThumbnails?.find(Boolean) ?? item.thumbnail }}
           />
         </div>
       </div>

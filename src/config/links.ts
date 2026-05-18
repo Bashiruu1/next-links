@@ -61,6 +61,13 @@ export interface ButtonLink extends LinkBase {
    * Place the file in /public and use a leading slash, e.g. "/avatar.jpg"
    */
   image?: string;
+  /** Share overlay metadata — required so the three-dot button opens a rich preview */
+  share: {
+    /** Bold title shown in the preview card */
+    title: string;
+    /** Description shown in the preview card with a More / Less toggle */
+    description: string;
+  };
 }
 
 /**
@@ -212,12 +219,20 @@ export const config: SiteConfig = {
       type: LinkType.Button,
       label: "Code: SARAH5 to save on AfroPuppy Yoga",
       url: "https://afropuppyyoga.ca/?srsltid=AfmBOooJKtZe-lSmBUmwc2BD5mJn8zAhwSfq8iyTHVnGySCAhhOdY98m", // ← REPLACE with real URL before deploying
-      image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663446228701/pFRlGBKuUoljEWjn.png"
+      image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663446228701/pFRlGBKuUoljEWjn.png",
+      share: {
+        title: "AfroPuppy Yoga | Puppy Yoga Studio in Canada",
+        description: "Canada's #1 puppy yoga studio. Guided yoga, Afro-beat rhythms & adorable puppies in Mississauga, Hamilton, and Kitchener. Book your class today!",
+      },
     },
     {
       type: LinkType.Button,
       label: "Shop gluten-free ice cream treats by 10% off",
       url: "https://shop.fourall.ca/?ref=gdklprrw", // ← REPLACE with real URL before deploying
+      share: {
+        title: "Shop Our Ice Cream Catalog | Four All Ice Cream",
+        description: "Shop our gluten-free, A2 milk and plant-based ice cream cakes, tubs, cups, bars, bundles, and more through our online ice cream shop.",
+      },
     },
 
     // 2 · TikTok feature card

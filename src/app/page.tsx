@@ -64,7 +64,7 @@ export default async function Home() {
         <ProfileHeader profile={profile} socials={socials} theme={theme} />
 
         {/* Link items */}
-        <div className="flex flex-col gap-3 mt-2">
+        <div className="flex flex-col space-y-5 mt-2">
           {links.map((link, index) => {
             const key = `${link.type}-${link.url}`;
 

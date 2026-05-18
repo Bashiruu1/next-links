@@ -17,6 +17,10 @@ const item: ButtonLink = {
   type: LinkType.Button,
   label: "Shop gluten-free ice cream treats by 10% off",
   url: "https://example.com/shop",
+  share: {
+    title: "Test Share Title",
+    description: "Test share description for the overlay.",
+  },
 };
 
 describe("LinkButton", () => {

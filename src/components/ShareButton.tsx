@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { config } from "@/config/links";
 import { useShare } from "@/hooks/useShare";
 import ShareModal from "@/components/ShareModal";
+import LinkShareOverlay from "@/components/LinkShareOverlay";
 
 interface ShareButtonProps {
   /** URL to share (passed to navigator.share). */
@@ -15,6 +16,12 @@ interface ShareButtonProps {
   color?: string;
   /** Extra Tailwind classes appended after the base styles (e.g. positioning, margins). */
   className?: string;
+  /** When provided, opens a LinkShareOverlay instead of the generic ShareModal. */
+  shareOverlay?: {
+    image?: string;
+    shareTitle?: string;
+    shareDescription?: string;
+  };
 }
 
 /**
@@ -23,7 +30,7 @@ interface ShareButtonProps {
  * document.body so parent CSS `filter`/`transform` (e.g. hover:brightness)
  * doesn't trap the fixed-position overlay inside the link card.
  */
-export default function ShareButton({ url, title, color, className = "" }: ShareButtonProps) {
+export default function ShareButton({ url, title, color, className = "", shareOverlay }: ShareButtonProps) {
   const { handleShare, shareOpen, setShareOpen } = useShare(url, title);
   const [mounted, setMounted] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -53,11 +60,20 @@ export default function ShareButton({ url, title, color, className = "" }: Share
       </button>
 
       {mounted && shareOpen && createPortal(
-        <ShareModal
-          username={config.profile.username}
-          repoUrl={config.meta.repoUrl}
-          onClose={() => setShareOpen(false)}
-        />,
+        shareOverlay ? (
+          <LinkShareOverlay
+            url={url}
+            image={shareOverlay.image}
+            shareTitle={shareOverlay.shareTitle}
+            shareDescription={shareOverlay.shareDescription}
+            onClose={() => setShareOpen(false)}
+          />
+        ) : (
+          <ShareModal
+            username={config.profile.username}
+            onClose={() => setShareOpen(false)}
+          />
+        ),
         document.body
       )}
     </>

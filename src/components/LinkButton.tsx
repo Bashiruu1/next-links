@@ -45,7 +45,16 @@ export default function LinkButton({ item, theme }: LinkButtonProps) {
         </span>
       </a>
 
-      <ShareButton url={item.url} title={item.label} className="mr-2" />
+      <ShareButton
+        url={item.url}
+        title={item.label}
+        className="mr-2"
+        shareOverlay={{
+          image: item.image,
+          shareTitle: item.share.title,
+          shareDescription: item.share.description,
+        }}
+      />
     </div>
   );
 }
