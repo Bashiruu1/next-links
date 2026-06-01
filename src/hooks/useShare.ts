@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useShare(url: string, title: string) {
+export function useShare() {
   const [shareOpen, setShareOpen] = useState(false);
 
   function handleShare(e: React.MouseEvent) {

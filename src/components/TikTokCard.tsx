@@ -212,6 +212,7 @@ export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }
   const [mounted,   setMounted]   = useState(false);
 
   // Guard portal against SSR
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   const hasResolved     = resolvedThumbnails && resolvedThumbnails.some(Boolean);

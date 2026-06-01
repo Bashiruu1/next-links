@@ -242,6 +242,7 @@ export default function LinkShareOverlay({
               /* Horizontal layout — ButtonLink with title + description */
               <div className="flex gap-4 bg-gray-50 p-5">
                 {image && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={image}
                     alt={shareTitle}
@@ -280,6 +281,7 @@ export default function LinkShareOverlay({
               <>
                 {image && (
                   <div className="flex justify-center pt-6 pb-4 px-6">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={image}
                       alt={domain}

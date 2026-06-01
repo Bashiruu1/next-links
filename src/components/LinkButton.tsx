@@ -26,6 +26,7 @@ export default function LinkButton({ item, theme }: LinkButtonProps) {
       >
         {/* Left image */}
         {hasImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={item.image}
             alt={item.label}

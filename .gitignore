@@ -40,6 +40,9 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
+# Claude Code local config
+.claude/
+
 # IDE / editors
 .idea/
 .vscode/

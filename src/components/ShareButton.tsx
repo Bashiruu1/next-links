@@ -31,10 +31,11 @@ interface ShareButtonProps {
  * doesn't trap the fixed-position overlay inside the link card.
  */
 export default function ShareButton({ url, title, color, className = "", shareOverlay }: ShareButtonProps) {
-  const { handleShare, shareOpen, setShareOpen } = useShare(url, title);
+  const { handleShare, shareOpen, setShareOpen } = useShare();
   const [mounted, setMounted] = useState(false);
   const [hovered, setHovered] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   return (
@@ -44,7 +45,7 @@ export default function ShareButton({ url, title, color, className = "", shareOv
         onClick={handleShare}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        aria-label="Share"
+        aria-label={`Share ${title}`}
         className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition ${className}`}
         style={{
           opacity: hovered ? 1 : 0.5,
