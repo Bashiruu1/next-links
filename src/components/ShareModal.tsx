@@ -13,7 +13,6 @@ import {
 
 interface ShareModalProps {
   username: string;
-  repoUrl: string;
   onClose: () => void;
 }
 
@@ -39,7 +38,7 @@ type SharePlatform =
       onClick: (url: string) => void;
     };
 
-export default function ShareModal({ username, repoUrl, onClose }: ShareModalProps) {
+export default function ShareModal({ username, onClose }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const url = typeof window !== "undefined" ? window.location.href : "";
@@ -140,6 +139,7 @@ export default function ShareModal({ username, repoUrl, onClose }: ShareModalPro
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
       style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
       onClick={(e) => {
+        e.stopPropagation();
         if (e.target === overlayRef.current) onClose();
       }}
     >
@@ -194,36 +194,6 @@ export default function ShareModal({ username, repoUrl, onClose }: ShareModalPro
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-gray-100" />
-
-        {/* CTA section */}
-        <div className="px-6 py-5">
-          <p className="font-semibold text-sm text-gray-900 mb-1">
-            Join @{username} on next-links
-          </p>
-          <p className="text-sm text-gray-500 mb-4">
-            A free, open-source, self-hosted link-in-bio — no platform lock-in.
-          </p>
-          <div className="flex gap-3">
-            <a
-              href={repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 py-3 rounded-full bg-black text-white text-sm font-semibold text-center hover:bg-gray-800 transition-colors"
-            >
-              Get it on GitHub
-            </a>
-            <a
-              href={repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 py-3 rounded-full border border-gray-300 text-gray-900 text-sm font-semibold text-center hover:bg-gray-50 transition-colors"
-            >
-              Find out more
-            </a>
-          </div>
-        </div>
       </div>
     </div>
   );

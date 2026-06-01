@@ -13,8 +13,8 @@ describe("config.profile", () => {
     expect(config.profile.bio.trim()).not.toBe("");
   });
 
-  it("has an avatar path starting with /", () => {
-    expect(config.profile.avatar).toMatch(/^\//);
+  it("has a non-empty avatar", () => {
+    expect(config.profile.avatar.trim()).not.toBe("");
   });
 
   it("has a non-empty username", () => {

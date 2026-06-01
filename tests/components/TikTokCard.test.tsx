@@ -26,13 +26,13 @@ const subtitle = "17.5K Followers";
 describe("TikTokCard", () => {
   it("renders as a link to the card URL inside the modal", () => {
     render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getAllByRole("button")[0]);
     expect(screen.getByRole("link", { name: /Follow on TikTok/i })).toHaveAttribute("href", item.url);
   });
 
   it("opens in a new tab with security attributes", () => {
     render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getAllByRole("button")[0]);
     const link = screen.getByRole("link", { name: /Follow on TikTok/i });
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
@@ -83,7 +83,7 @@ describe("TikTokCard", () => {
   });
 
   it("applies the theme buttonBg as background-color", () => {
-    render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
-    expect(screen.getByRole("button")).toHaveStyle({ backgroundColor: theme.buttonBg });
+    const { container } = render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
+    expect(container.firstChild).toHaveStyle({ backgroundColor: theme.buttonBg });
   });
 });

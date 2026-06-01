@@ -1,25 +1,23 @@
-name: Build & Deploy
+name: CI
 
 on:
   push:
     branches: [main]
-  # Rebuild daily at 6 AM UTC — keeps TikTok thumbnails fresh
-  schedule:
-    - cron: "0 6 * * *"
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  test:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231
+        uses: actions/checkout@v6
 
       - name: Set up Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
@@ -27,25 +25,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ── Tests ───────────────────────────────────────────────────────────────
-      # Vitest exits with a non-zero code on any failure, which fails the job.
       - name: Run tests
         run: npm run test:run
-
-      # ── Build ────────────────────────────────────────────────────────────────
-      # TikTok oEmbed thumbnails are fetched here at build time.
-      - name: Build static site
-        run: npm run build
-        # Add any env vars needed at build time here, e.g.:
-        # env:
-        #   NEXT_PUBLIC_SOME_KEY: ${{ secrets.SOME_KEY }}
-
-      # ── Deploy to GitHub Pages ───────────────────────────────────────────────
-      # Skipped automatically when running locally via `act` (ACT env var is set).
-      - name: Deploy to GitHub Pages
-        if: ${{ !env.ACT }}
-        uses: peaceiris/actions-gh-pages@4b09552702d0b65573696410d4707c765da2630b
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-          destination_dir: .

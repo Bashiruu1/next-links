@@ -17,6 +17,10 @@ const item: ButtonLink = {
   type: LinkType.Button,
   label: "Shop gluten-free ice cream treats by 10% off",
   url: "https://example.com/shop",
+  share: {
+    title: "Test Share Title",
+    description: "Test share description for the overlay.",
+  },
 };
 
 describe("LinkButton", () => {
@@ -45,9 +49,8 @@ describe("LinkButton", () => {
   });
 
   it("applies the theme buttonBg as background-color", () => {
-    render(<LinkButton item={item} theme={theme} />);
-    const link = screen.getByRole("link");
-    expect(link).toHaveStyle({ backgroundColor: theme.buttonBg });
+    const { container } = render(<LinkButton item={item} theme={theme} />);
+    expect(container.firstChild).toHaveStyle({ backgroundColor: theme.buttonBg });
   });
 
   it("applies the theme buttonText as color", () => {

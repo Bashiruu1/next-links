@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import type { CardLink, SiteConfig } from "@/config/links";
 import { PlatformIcon } from "./SocialIcons";
+import ShareButton from "@/components/ShareButton";
 
 interface TikTokCardProps {
   item: CardLink;
@@ -218,35 +219,39 @@ export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setShowModal(true)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        className="
-          block w-full rounded-2xl overflow-hidden text-left
-          transition-all duration-150
-          hover:brightness-110 active:scale-[0.98]
-        "
-        style={{ backgroundColor: theme.buttonBg }}
-      >
-        {/* Thumbnail area */}
-        <div className="relative w-full" style={{ height: 230 }}>
-          {hasResolved ? (
-            <StackedThumbnails
-              thumbnails={resolvedThumbnails!.filter(Boolean)}
-              bg={theme.buttonBg}
-              fanned={hovered}
-            />
-          ) : hasFallbackImage ? (
-            <Image src={item.thumbnail!} alt={item.label} fill className="object-cover" sizes="480px" />
-          ) : (
-            <PhonePlaceholder bg={theme.buttonBg} />
-          )}
-        </div>
+      <div className="w-full rounded-2xl overflow-hidden" style={{ backgroundColor: theme.buttonBg }}>
+        {/* Thumbnail — clicking opens the TikTok modal */}
+        <button
+          type="button"
+          onClick={() => setShowModal(true)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className="
+            block w-full text-left
+            transition-all duration-150
+            hover:brightness-110 active:scale-[0.98]
+          "
+        >
+          <div className="relative w-full" style={{ height: 230 }}>
+            {hasResolved ? (
+              <StackedThumbnails
+                thumbnails={resolvedThumbnails!.filter(Boolean)}
+                bg={theme.buttonBg}
+                fanned={hovered}
+              />
+            ) : hasFallbackImage ? (
+              <Image src={item.thumbnail!} alt={item.label} fill className="object-cover" sizes="480px" />
+            ) : (
+              <PhonePlaceholder bg={theme.buttonBg} />
+            )}
+          </div>
+        </button>
 
-        {/* Card footer */}
-        <div className="flex items-center px-4 py-3">
+        {/* Footer — clicking the text area also opens the modal; share button stops propagation */}
+        <div
+          className="flex items-center px-4 py-3 cursor-pointer hover:brightness-110"
+          onClick={() => setShowModal(true)}
+        >
           <span style={{ color: theme.subtextColor }} className="shrink-0 mr-2">
             <PlatformIcon platform={item.platform} />
           </span>
@@ -254,15 +259,15 @@ export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }
             <p className="text-sm font-semibold" style={{ color: theme.textColor }}>{item.label}</p>
             <p className="text-xs mt-0.5" style={{ color: theme.subtextColor }}>{subtitle}</p>
           </div>
-          <span className="opacity-60 shrink-0 ml-2" style={{ color: theme.textColor }} aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor" width={16} height={16}>
-              <circle cx="12" cy="5" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="12" cy="19" r="2" />
-            </svg>
-          </span>
+          <ShareButton
+            url={item.url}
+            title={item.label}
+            color={theme.textColor}
+            className="ml-2"
+            shareOverlay={{ image: resolvedThumbnails?.find(Boolean) ?? item.thumbnail }}
+          />
         </div>
-      </button>
+      </div>
 
       {mounted && showModal && createPortal(
         <TikTokModal
