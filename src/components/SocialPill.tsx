@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { SocialPillLink, SiteConfig } from "@/config/links";
 import { formatFollowerCount } from "@/lib/tiktok-api";
 import ShareButton from "@/components/ShareButton";
@@ -26,18 +25,13 @@ export default function SocialPill({ item, theme }: SocialPillProps) {
       >
         {/* Left avatar */}
         {hasAvatar ? (
-          <div
-            className="relative rounded-full overflow-hidden shrink-0"
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.avatar}
+            alt={item.label}
+            className="rounded-full object-cover shrink-0"
             style={{ width: 36, height: 36 }}
-          >
-            <Image
-              src={item.avatar!}
-              alt={item.label}
-              fill
-              className="object-cover"
-              sizes="36px"
-            />
-          </div>
+          />
         ) : (
           // Invisible spacer to keep layout consistent
           <div style={{ width: 36, height: 36 }} className="shrink-0" />

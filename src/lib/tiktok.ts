@@ -39,7 +39,9 @@ export async function fetchTikTokThumbnails(
 
       const oembedUrl = `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`;
 
-      const res = await fetch(oembedUrl);
+      const res = await fetch(oembedUrl, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; next-links/1.0)" },
+      });
 
       if (!res.ok) {
         console.warn(`[next-links] TikTok oEmbed failed (${res.status}) for: ${url}`);

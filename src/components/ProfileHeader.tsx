@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { SiteConfig } from "@/config/links";
 import { PlatformIcon } from "./SocialIcons";
 
@@ -12,20 +11,13 @@ export default function ProfileHeader({ profile, socials, theme }: ProfileHeader
   return (
     <div className="flex flex-col items-center gap-3 pt-10 pb-6">
       {/* Avatar */}
-      <div
-        className="relative rounded-full overflow-hidden"
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={profile.avatar}
+        alt={profile.name}
+        className="rounded-full object-cover"
         style={{ width: 88, height: 88 }}
-      >
-        <Image
-          src={profile.avatar}
-          alt={profile.name}
-          fill
-          className="object-cover"
-          sizes="88px"
-          priority
-          loading="eager"
-        />
-      </div>
+      />
 
       {/* Name */}
       <h1
