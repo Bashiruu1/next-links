@@ -75,7 +75,6 @@ export default function TopBar({ username, repoUrl }: TopBarProps) {
       {shareOpen && (
         <ShareModal
           username={username}
-          repoUrl={repoUrl}
           onClose={() => setShareOpen(false)}
         />
       )}
