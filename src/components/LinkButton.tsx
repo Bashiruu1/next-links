@@ -22,6 +22,7 @@ export default function LinkButton({ item, theme }: LinkButtonProps) {
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center flex-1 px-3 py-3 min-w-0 active:scale-[0.98]"
+        style={{ color: "inherit" }}
       >
         {/* Left image */}
         {hasImage ? (
