@@ -9,12 +9,9 @@ import TikTokCard from "@/components/TikTokCard";
 import SocialPill from "@/components/SocialPill";
 import TopBar from "@/components/TopBar";
 
-// ── Build-time data resolution ────────────────────────────────────────────────
+// ── Data resolution ───────────────────────────────────────────────────────────
 //
-// All async work here runs at `npm run build` time — the result is baked into
-// static HTML. No server is needed at request time.
-//
-// Two data sources run in parallel:
+// Two data sources run in parallel (cached by Vercel ISR, revalidated daily):
 //   1. TikTok API v2 (when env vars are set) — live follower count + cover images
 //   2. TikTok oEmbed (fallback) — thumbnails from manually specified video URLs
 
@@ -43,6 +40,8 @@ function buildSubtitle(link: CardLink, apiData: TikTokApiResult | null): string 
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
+
+export const revalidate = 86400; // re-fetch TikTok data once per day
 
 export default async function Home() {
   const { profile, socials, links, theme, meta } = config;
