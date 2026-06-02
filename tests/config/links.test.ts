@@ -60,13 +60,15 @@ describe("config.links", () => {
       });
   });
 
-  it("card items have a label, followerCount, and url", () => {
+  it("card items have a label and url; followerCount is optional but valid when present", () => {
     config.links
       .filter((l): l is CardLink => l.type === LinkType.Card)
       .forEach((link) => {
         expect(link.label.trim()).not.toBe("");
-        expect(typeof link.followerCount).toBe("number");
-        expect(link.followerCount).toBeGreaterThanOrEqual(0);
+        if (link.followerCount !== undefined) {
+          expect(typeof link.followerCount).toBe("number");
+          expect(link.followerCount).toBeGreaterThanOrEqual(0);
+        }
         expect(link.url).toBeTruthy();
       });
   });

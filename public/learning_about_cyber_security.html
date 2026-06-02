@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Break Into Cybersecurity 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #f2ede8;
+    --card: #ffffff;
+    --border: #e0d5cc;
+    --accent: #7b1d35;
+    --accent2: #a32545;
+    --accent3: #5c1426;
+    --warn: #c0392b;
+    --text: #1a0a0f;
+    --muted: #8a6a72;
+    --stage1: #7b1d35;
+    --stage2: #a32545;
+    --stage3: #5c1426;
+    --stage4: #c0392b;
+    --stage5: #3d0d1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(123,29,53,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(123,29,53,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient glow blobs */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(163,37,69,0.10) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glow-blob-2 {
+    position: fixed;
+    bottom: -200px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(123,29,53,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 56px 24px 40px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    background: #7b1d35;
+    border-radius: 0 0 16px 16px;
+    margin-bottom: 16px;
+  }
+
+  .header-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .byline {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #ffffff;
+    margin-bottom: 24px;
+    opacity: 0.9;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 .line1 { color: #ffffff; display: block; }
+  h1 .line2 {
+    display: block;
+    background: linear-gradient(90deg, #ffcdd9, #f9a8c0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.75);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.65);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 4px 12px;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  /* PHASES TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 0;
+  }
+
+  .timeline-spine {
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--stage1), var(--stage2), var(--stage3), var(--stage4), var(--stage5));
+    opacity: 0.4;
+  }
+
+  .phase {
+    position: relative;
+    padding-left: 72px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.1s; }
+  .phase:nth-child(2) { animation-delay: 0.2s; }
+  .phase:nth-child(3) { animation-delay: 0.3s; }
+  .phase:nth-child(4) { animation-delay: 0.4s; }
+  .phase:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .phase-dot {
+    position: absolute;
+    left: 16px;
+    top: 18px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    z-index: 2;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    background: #7b1d35;
+    border-radius: 6px;
+    padding: 10px 16px;
+  }
+
+  .phase-header .phase-number,
+  .phase-header .phase-number.c1,
+  .phase-header .phase-number.c2,
+  .phase-header .phase-number.c3,
+  .phase-header .phase-number.c4,
+  .phase-header .phase-number.c5 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.6) !important;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    padding-top: 0;
+    margin-right: 14px;
+  }
+
+  .phase-header .phase-title,
+  .phase-header .phase-title.c1,
+  .phase-header .phase-title.c2,
+  .phase-header .phase-title.c3,
+  .phase-header .phase-title.c4,
+  .phase-header .phase-title.c5 {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    margin-bottom: 2px;
+    background: none !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .phase-header .phase-duration {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.55) !important;
+    letter-spacing: 0.1em;
+  }
+
+
+
+  /* CARDS GRID */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(123,29,53,0.12);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+
+  .card-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.01em;
+  }
+
+  .card-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-top: 8px;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+    opacity: 0.7;
+  }
+
+  /* FRAMEWORKS SECTION */
+  .frameworks-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .framework-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .framework-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .fw-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+
+  .fw-full {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    opacity: 0.45;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .fw-desc {
+    font-size: 0.73rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* CERTS SECTION */
+  .certs-path {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .cert-block {
+    flex: 1;
+    min-width: 140px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 18px 14px;
+    position: relative;
+    text-align: center;
+  }
+
+  .cert-block:first-child { border-radius: 6px 0 0 6px; }
+  .cert-block:last-child { border-radius: 0 6px 6px 0; }
+
+  .cert-block + .cert-block {
+    border-left: none;
+  }
+
+  .cert-block::before {
+    content: '▶';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: var(--muted);
+    z-index: 3;
+  }
+
+  .cert-block:last-child::before { display: none; }
+
+  .cert-level {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    opacity: 0.4;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .cert-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .cert-vendor {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    opacity: 0.5;
+  }
+
+  /* FREE RESOURCES SECTION */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .resource-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .resource-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .resource-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .resource-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .resource-free {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-top: 5px;
+    text-transform: uppercase;
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::before {
+    content: '//';
+    color: var(--accent);
+  }
+
+  /* COLOR CLASSES */
+  .c1 { color: var(--stage1); }
+  .c2 { color: var(--stage2); }
+  .c3 { color: var(--stage3); }
+  .c4 { color: var(--stage4); }
+  .c5 { color: var(--stage5); }
+
+  /* WATERMARK */
+  .watermark {
+    position: fixed;
+    bottom: 18px;
+    right: 22px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(123,29,53,0.4);
+    text-transform: uppercase;
+    z-index: 100;
+    pointer-events: none;
+    writing-mode: horizontal-tb;
+  }
+
+  .watermark-inline {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(123,29,53,0.35);
+    text-transform: uppercase;
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* TIP BOX */
+  .tip-box {
+    background: #7b1d35;
+    border: 1px solid #5c1426;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .tip-text {
+    font-size: 0.78rem;
+    color: #ffffff;
+    line-height: 1.55;
+  }
+
+  /* DISCLAIMER */
+  .disclaimer-box {
+    background: #f7f0f2;
+    border: 1px solid rgba(123,29,53,0.2);
+    border-left: 4px solid #7b1d35;
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-top: 40px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .disclaimer-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+  .disclaimer-text {
+    font-size: 0.76rem;
+    color: #4a2530;
+    line-height: 1.65;
+  }
+
+  .disclaimer-text strong {
+    font-weight: 700;
+    color: #7b1d35;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 48px 0;
+  }
+</style>
+</head>
+<body>
+<div class="glow-blob-2"></div>
+
+<header>
+  <div class="header-tag">2026 Edition</div>
+  <h1>
+    <span class="line1">Learning About</span>
+    <span class="line2">Cybersecurity</span>
+  </h1>
+  <p class="subtitle">A complete beginner's roadmap from zero knowledge to job-ready, with free resources, key certifications, and industry frameworks.</p>
+  <p class="byline">by Sarah Bashir &nbsp;·&nbsp; @Sarah.Rh.Bashir</p>
+  <div class="header-meta">
+    <span class="meta-pill">No Experience Required</span>
+    <span class="meta-pill">5 Phases</span>
+    <span class="meta-pill">100% Achievable</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PHASES TIMELINE -->
+  <div class="section-label">Roadmap Phases</div>
+  <div class="timeline">
+    <div class="timeline-spine"></div>
+
+    <!-- PHASE 1 -->
+    <div class="phase">
+      <div class="phase-dot c1">01</div>
+      <div class="phase-header">
+        <div class="phase-number c1">Phase 01</div>
+        <div class="phase-title-block">
+          <div class="phase-title c1">Build Your Foundation</div>
+          <div class="phase-duration">Weeks 1 to 6 &nbsp;|&nbsp; Beginner</div>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="card c1">
+          <span class="card-icon">🖥️</span>
+          <div class="card-title">How Computers Work</div>
+          <div class="card-desc">Learn operating systems (Windows, Linux, macOS), file systems, processes, and basic hardware concepts.</div>
+          <span class="card-tag c1">Foundational</span>
+        </div>
+        <div class="card c1">
+          <span class="card-icon">🌐</span>
+          <div class="card-title">Networking Basics</div>
+          <div class="card-desc">TCP/IP, DNS, HTTP/HTTPS, firewalls, subnetting. Understanding how data moves is non-negotiable in security.</div>
+          <span class="card-tag c1">Critical</span>
+        </div>
+        <div class="card c1">
+          <span class="card-icon">🐧</span>
+          <div class="card-title">Linux Command Line</div>
+          <div class="card-desc">Navigate directories, manage files, run scripts. Most security tools live in Linux environments.</div>
+          <span class="card-tag c1">Essential</span>
+        </div>
+        <div class="card c1">
+          <span class="card-icon">🔑</span>
+          <div class="card-title">Security Core Concepts</div>
+          <div class="card-desc">CIA Triad (Confidentiality, Integrity, Availability), authentication vs. authorization, encryption basics.</div>
+          <span class="card-tag c1">Must Know</span>
+        </div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span class="tip-text">Start with Professor Messer's free CompTIA A+ videos on YouTube. They cover exactly what you need for this phase and are completely free.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase">
+      <div class="phase-dot c2">02</div>
+      <div class="phase-header">
+        <div class="phase-number c2">Phase 02</div>
+        <div class="phase-title-block">
+          <div class="phase-title c2">Get Your First Certification</div>
+          <div class="phase-duration">Weeks 7 to 16 &nbsp;|&nbsp; Beginner to Intermediate</div>
+        </div>
+      </div>
+      <div class="certs-path">
+        <div class="cert-block c1">
+          <div class="cert-level">Entry</div>
+          <div class="cert-name">Google Cybersecurity Certificate</div>
+          <div class="cert-vendor">Google / Coursera</div>
+        </div>
+        <div class="cert-block c2">
+          <div class="cert-level">Core</div>
+          <div class="cert-name">CompTIA Security+</div>
+          <div class="cert-vendor">CompTIA</div>
+        </div>
+        <div class="cert-block c3">
+          <div class="cert-level">Cloud</div>
+          <div class="cert-name">SC-900</div>
+          <div class="cert-vendor">Microsoft Learn</div>
+        </div>
+        <div class="cert-block c4">
+          <div class="cert-level">Network</div>
+          <div class="cert-name">CompTIA Network+</div>
+          <div class="cert-vendor">CompTIA</div>
+        </div>
+        <div class="cert-block c5">
+          <div class="cert-level">Advanced</div>
+          <div class="cert-name">CompTIA CySA+</div>
+          <div class="cert-vendor">CompTIA</div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🎯</span>
+        <span class="tip-text">CompTIA Security+ is the industry standard for entry-level roles and is DoD approved. Many employers list it as a minimum requirement. Start here after your Google cert.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase">
+      <div class="phase-dot c3">03</div>
+      <div class="phase-header">
+        <div class="phase-number c3">Phase 03</div>
+        <div class="phase-title-block">
+          <div class="phase-title c3">Hands-On Practice</div>
+          <div class="phase-duration">Weeks 10 to 24 &nbsp;|&nbsp; Intermediate</div>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="card c3">
+          <span class="card-icon">🏠</span>
+          <div class="card-title">Build a Home Lab</div>
+          <div class="card-desc">Use VirtualBox or VMware (free) to set up vulnerable VMs. Practice on your own machines safely.</div>
+          <span class="card-tag c3">Hands-On</span>
+        </div>
+        <div class="card c3">
+          <span class="card-icon">⚔️</span>
+          <div class="card-title">TryHackMe</div>
+          <div class="card-desc">Guided, beginner-friendly rooms covering SOC analysis, pentesting basics, and real attack scenarios. Free tier available.</div>
+          <span class="card-tag c3">Free Tier</span>
+        </div>
+        <div class="card c3">
+          <span class="card-icon">🚩</span>
+          <div class="card-title">Hack The Box</div>
+          <div class="card-desc">CTF (Capture the Flag) challenges. Start with "Starting Point" machines designed for beginners. Tests real skills.</div>
+          <span class="card-tag c3">Free Tier</span>
+        </div>
+        <div class="card c3">
+          <span class="card-icon">☁️</span>
+          <div class="card-title">Microsoft Learn</div>
+          <div class="card-desc">Free learning paths for Azure Security, Microsoft Defender, Sentinel (SIEM), and all SC series certifications.</div>
+          <span class="card-tag c3">100% Free</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase">
+      <div class="phase-dot c4">04</div>
+      <div class="phase-header">
+        <div class="phase-number c4">Phase 04</div>
+        <div class="phase-title-block">
+          <div class="phase-title c4">Learn Industry Frameworks</div>
+          <div class="phase-duration">Weeks 16 to 28 &nbsp;|&nbsp; Intermediate</div>
+        </div>
+      </div>
+      <div class="frameworks-row">
+        <div class="framework-card c2">
+          <div class="fw-name">NIST</div>
+          <div class="fw-full">National Institute of Standards and Technology</div>
+          <div class="fw-desc">The gold standard for organizational security policy. The NIST CSF (Cybersecurity Framework) covers Identify, Protect, Detect, Respond, and Recover. Required knowledge for any SOC or compliance role.</div>
+        </div>
+        <div class="framework-card c4">
+          <div class="fw-name">MITRE ATT&CK</div>
+          <div class="fw-full">Adversarial Tactics, Techniques and Common Knowledge</div>
+          <div class="fw-desc">A real-world knowledge base of how attackers actually behave. Used by SOC analysts to detect threats and map attack patterns. Essential for threat hunting and incident response.</div>
+        </div>
+        <div class="framework-card c3">
+          <div class="fw-name">OWASP</div>
+          <div class="fw-full">Open Worldwide Application Security Project</div>
+          <div class="fw-desc">The OWASP Top 10 is the definitive list of critical web application vulnerabilities (SQL injection, XSS, etc.). Free resource. Critical for anyone going into AppSec or pentesting.</div>
+        </div>
+        <div class="framework-card c1">
+          <div class="fw-name">ISO 27001</div>
+          <div class="fw-full">International Organization for Standardization</div>
+          <div class="fw-desc">International standard for information security management systems (ISMS). Widely referenced in enterprise environments and vendor assessments. Good to know for GRC roles.</div>
+        </div>
+        <div class="framework-card c5">
+          <div class="fw-name">Cyber Kill Chain</div>
+          <div class="fw-full">Lockheed Martin Framework</div>
+          <div class="fw-desc">Maps the 7 stages of a cyberattack from reconnaissance to exfiltration. Helps defenders understand where to break the chain and stop attackers before damage occurs.</div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">🗺️</span>
+        <span class="tip-text">You do not need to memorize these frameworks. You need to understand what each one is for and when to apply it. Employers want to know you speak the language.</span>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div class="phase">
+      <div class="phase-dot c5">05</div>
+      <div class="phase-header">
+        <div class="phase-number c5">Phase 05</div>
+        <div class="phase-title-block">
+          <div class="phase-title c5">Break In and Get Hired</div>
+          <div class="phase-duration">Month 6 onward &nbsp;|&nbsp; Job Ready</div>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <div class="card c5">
+          <span class="card-icon">📁</span>
+          <div class="card-title">Build a Portfolio</div>
+          <div class="card-desc">Document your TryHackMe and HTB progress. Write up home lab projects. GitHub everything. Show work, not just credentials.</div>
+          <span class="card-tag c5">Differentiator</span>
+        </div>
+        <div class="card c5">
+          <span class="card-icon">💼</span>
+          <div class="card-title">Entry Level Roles</div>
+          <div class="card-desc">Target SOC Analyst Tier 1, IT Support with security duties, Security Operations Intern, or Junior Penetration Tester.</div>
+          <span class="card-tag c5">Target Roles</span>
+        </div>
+        <div class="card c5">
+          <span class="card-icon">🔗</span>
+          <div class="card-title">LinkedIn + Networking</div>
+          <div class="card-desc">Optimize your profile with certifications. Follow CISA, SANS Institute, and Krebs on Security. Comment on posts and be visible.</div>
+          <span class="card-tag c5">Visibility</span>
+        </div>
+        <div class="card c5">
+          <span class="card-icon">📰</span>
+          <div class="card-title">Stay Current</div>
+          <div class="card-desc">Read Krebs on Security, The Hacker News, and Dark Reading weekly. Subscribe to CISA advisories. Security moves fast.</div>
+          <span class="card-tag c5">Ongoing</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end timeline -->
+
+  <div class="divider"></div>
+
+  <!-- FREE RESOURCES -->
+  <div class="section-label">Free Resources to Bookmark</div>
+  <div class="resources-grid">
+    <div class="resource-card">
+      <div class="resource-logo">🟢</div>
+      <div>
+        <div class="resource-name">TryHackMe</div>
+        <div class="resource-desc">Guided cybersecurity training rooms for all levels. The best starting point for hands-on practice. Free tier is generous.</div>
+        <div class="resource-free">Free Tier Available</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">🔵</div>
+      <div>
+        <div class="resource-name">Microsoft Learn</div>
+        <div class="resource-desc">Full free learning paths for every Microsoft security certification including SC-900, SC-200, and AZ-500. Sandbox labs included.</div>
+        <div class="resource-free">100% Free</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">🎓</div>
+      <div>
+        <div class="resource-name">Google Career Certificates</div>
+        <div class="resource-desc">The Google Cybersecurity Certificate on Coursera. Financial aid available. Recognized by hundreds of employers and a solid starting credential.</div>
+        <div class="resource-free">Financial Aid Available</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">🖥️</div>
+      <div>
+        <div class="resource-name">Professor Messer</div>
+        <div class="resource-desc">Free video study guides for every CompTIA certification on YouTube and his website. The community around his content is incredibly supportive.</div>
+        <div class="resource-free">100% Free</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">🟠</div>
+      <div>
+        <div class="resource-name">Hack The Box</div>
+        <div class="resource-desc">CTF challenges and realistic lab environments. Start with "Starting Point" machines. Widely respected proof of skill by employers.</div>
+        <div class="resource-free">Free Tier Available</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">🔴</div>
+      <div>
+        <div class="resource-name">OWASP.org</div>
+        <div class="resource-desc">The full OWASP Top 10 and Web Security Testing Guide are freely available. Required reading for anyone going near web application security.</div>
+        <div class="resource-free">100% Free</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">⚡</div>
+      <div>
+        <div class="resource-name">MITRE ATT&CK</div>
+        <div class="resource-desc">The complete ATT&CK framework is public and free at attack.mitre.org. Bookmark the Navigator tool to visualize threat actor techniques.</div>
+        <div class="resource-free">100% Free</div>
+      </div>
+    </div>
+    <div class="resource-card">
+      <div class="resource-logo">🛡️</div>
+      <div>
+        <div class="resource-name">CISA Resources</div>
+        <div class="resource-desc">US Cybersecurity and Infrastructure Security Agency publishes free advisories, training, and frameworks. Their free cybersecurity training portal is underrated.</div>
+        <div class="resource-free">100% Free</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer-box">
+    <span class="disclaimer-icon">⚠️</span>
+    <div class="disclaimer-text">
+      <strong>Disclaimer:</strong> This roadmap does not guarantee you a career in cybersecurity. It is intended purely for educational purposes to help guide you on learning the fundamentals. If you want to learn about cybersecurity but do not know where to start, this roadmap is a starting point for self-directed learning only. Career outcomes depend on individual effort, experience, market conditions, and many other factors.
+    </div>
+  </div>
+
+  <!-- WATERMARK INLINE -->
+  <div class="watermark-inline">@Sarah.Rh.Bashir<br><span style="font-size:11px; letter-spacing:0.1em; opacity:0.6;">by Sarah Bashir</span></div>
+
+</div><!-- end container -->
+
+<!-- FIXED WATERMARK -->
+<div class="watermark">@Sarah.Rh.Bashir</div>
+
+</body>
+</html>

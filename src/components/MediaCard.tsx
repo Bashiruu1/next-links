@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import type { CardLink, SiteConfig } from "@/config/links";
+import type { CardLink, SiteConfig, SocialPlatform } from "@/config/links";
 import { PlatformIcon } from "./SocialIcons";
 import ShareButton from "@/components/ShareButton";
 
-interface TikTokCardProps {
+interface MediaCardProps {
   item: CardLink;
   theme: SiteConfig["theme"];
   /** Subtitle string computed by page.tsx (formatted follower count). */
@@ -15,6 +15,17 @@ interface TikTokCardProps {
   /** Resolved thumbnail URLs fetched at build time (passed from page.tsx) */
   resolvedThumbnails?: string[];
 }
+
+const PLATFORM_LABELS: Record<SocialPlatform, string> = {
+  tiktok: "TikTok",
+  instagram: "Instagram",
+  twitter: "Twitter",
+  youtube: "YouTube",
+  facebook: "Facebook",
+  linkedin: "LinkedIn",
+  github: "GitHub",
+  website: "Website",
+};
 
 // ── Phone positions ───────────────────────────────────────────────────────────
 
@@ -95,16 +106,18 @@ function StackedThumbnails({ thumbnails, bg, fanned }: { thumbnails: string[]; b
 }
 /* eslint-enable @next/next/no-img-element */
 
-// ── Bottom-sheet modal ────────────────────────────────────────────────────────
+// ── Modal (only used when platform is set) ────────────────────────────────────
 /* eslint-disable @next/next/no-img-element */
 
-function TikTokModal({
+type CardLinkWithPlatform = CardLink & { platform: SocialPlatform };
+
+function MediaModal({
   item,
   subtitle,
   resolvedThumbnails,
   onClose,
 }: {
-  item: CardLink;
+  item: CardLinkWithPlatform;
   subtitle: string;
   resolvedThumbnails?: string[];
   onClose: () => void;
@@ -195,7 +208,7 @@ function TikTokModal({
             rel="noopener noreferrer"
             className="block w-full py-3.5 rounded-full text-center text-sm font-semibold text-white bg-black hover:opacity-80 transition-opacity"
           >
-            Follow on TikTok
+            Follow on {PLATFORM_LABELS[item.platform]}
           </a>
         </div>
       </div>
@@ -206,7 +219,7 @@ function TikTokModal({
 
 // ── Card component ────────────────────────────────────────────────────────────
 
-export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }: TikTokCardProps) {
+export default function MediaCard({ item, theme, subtitle, resolvedThumbnails }: MediaCardProps) {
   const [hovered,   setHovered]   = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [mounted,   setMounted]   = useState(false);
@@ -215,47 +228,62 @@ export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
-  const hasResolved     = resolvedThumbnails && resolvedThumbnails.some(Boolean);
+  const hasResolved      = resolvedThumbnails && resolvedThumbnails.some(Boolean);
   const hasFallbackImage = item.thumbnail && item.thumbnail.trim() !== "";
+
+  const thumbnailArea = (
+    <div className="relative w-full" style={{ height: 230 }}>
+      {hasResolved ? (
+        <StackedThumbnails
+          thumbnails={resolvedThumbnails!.filter(Boolean)}
+          bg={theme.buttonBg}
+          fanned={hovered}
+        />
+      ) : hasFallbackImage ? (
+        <Image src={item.thumbnail!} alt={item.label} fill className="object-cover" sizes="480px" />
+      ) : item.videos?.length ? (
+        <PhonePlaceholder bg={theme.buttonBg} />
+      ) : null}
+    </div>
+  );
 
   return (
     <>
       <div className="w-full rounded-2xl overflow-hidden" style={{ backgroundColor: theme.buttonBg }}>
-        {/* Thumbnail — clicking opens the TikTok modal */}
-        <button
-          type="button"
-          onClick={() => setShowModal(true)}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          className="
-            block w-full text-left
-            transition-all duration-150
-            hover:brightness-110 active:scale-[0.98]
-          "
-        >
-          <div className="relative w-full" style={{ height: 230 }}>
-            {hasResolved ? (
-              <StackedThumbnails
-                thumbnails={resolvedThumbnails!.filter(Boolean)}
-                bg={theme.buttonBg}
-                fanned={hovered}
-              />
-            ) : hasFallbackImage ? (
-              <Image src={item.thumbnail!} alt={item.label} fill className="object-cover" sizes="480px" />
-            ) : (
-              <PhonePlaceholder bg={theme.buttonBg} />
-            )}
-          </div>
-        </button>
+        {/* Thumbnail — platform cards open modal; generic cards link directly */}
+        {item.platform ? (
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className="block w-full text-left transition-all duration-150 hover:brightness-110 active:scale-[0.98]"
+          >
+            {thumbnailArea}
+          </button>
+        ) : (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className="block w-full transition-all duration-150 hover:brightness-110 active:scale-[0.98]"
+          >
+            {thumbnailArea}
+          </a>
+        )}
 
-        {/* Footer — clicking the text area also opens the modal; share button stops propagation */}
+        {/* Footer */}
         <div
           className="flex items-center px-4 py-3 cursor-pointer hover:brightness-110"
-          onClick={() => setShowModal(true)}
+          onClick={item.platform ? () => setShowModal(true) : undefined}
         >
-          <span style={{ color: theme.subtextColor }} className="shrink-0 mr-2">
-            <PlatformIcon platform={item.platform} />
-          </span>
+          {item.platform && (
+            <span style={{ color: theme.subtextColor }} className="shrink-0 mr-2">
+              <PlatformIcon platform={item.platform} />
+            </span>
+          )}
           <div className="flex-1 text-center">
             <p className="text-sm font-semibold" style={{ color: theme.textColor }}>{item.label}</p>
             <p className="text-xs mt-0.5" style={{ color: theme.subtextColor }}>{subtitle}</p>
@@ -270,9 +298,9 @@ export default function TikTokCard({ item, theme, subtitle, resolvedThumbnails }
         </div>
       </div>
 
-      {mounted && showModal && createPortal(
-        <TikTokModal
-          item={item}
+      {item.platform && mounted && showModal && createPortal(
+        <MediaModal
+          item={item as CardLinkWithPlatform}
           subtitle={subtitle}
           resolvedThumbnails={resolvedThumbnails}
           onClose={() => setShowModal(false)}

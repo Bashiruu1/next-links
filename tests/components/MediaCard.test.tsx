@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import TikTokCard from "@/components/TikTokCard";
+import MediaCard from "@/components/MediaCard";
 import { LinkType } from "@/config/links";
 import type { CardLink, SiteConfig } from "@/config/links";
 
@@ -23,15 +23,15 @@ const item: CardLink = {
 
 const subtitle = "17.5K Followers";
 
-describe("TikTokCard", () => {
-  it("renders as a link to the card URL inside the modal", () => {
-    render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
+describe("MediaCard", () => {
+  it("renders a modal follow link for platform cards", () => {
+    render(<MediaCard item={item} theme={theme} subtitle={subtitle} />);
     fireEvent.click(screen.getAllByRole("button")[0]);
     expect(screen.getByRole("link", { name: /Follow on TikTok/i })).toHaveAttribute("href", item.url);
   });
 
-  it("opens in a new tab with security attributes", () => {
-    render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
+  it("follow link opens in a new tab with security attributes", () => {
+    render(<MediaCard item={item} theme={theme} subtitle={subtitle} />);
     fireEvent.click(screen.getAllByRole("button")[0]);
     const link = screen.getByRole("link", { name: /Follow on TikTok/i });
     expect(link).toHaveAttribute("target", "_blank");
@@ -39,19 +39,24 @@ describe("TikTokCard", () => {
   });
 
   it("renders the label and subtitle in the card footer", () => {
-    render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
+    render(<MediaCard item={item} theme={theme} subtitle={subtitle} />);
     expect(screen.getByText(item.label)).toBeInTheDocument();
     expect(screen.getByText(subtitle)).toBeInTheDocument();
   });
 
-  it("renders the phone placeholder when no thumbnails or fallback image are provided", () => {
-    render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
-    // PhonePlaceholder has no img elements
+  it("renders nothing in the image area when no thumbnails, fallback image, or videos are provided", () => {
+    render(<MediaCard item={item} theme={theme} subtitle={subtitle} />);
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+
+  it("renders the phone placeholder when videos are specified but not yet resolved", () => {
+    const itemWithVideos: CardLink = { ...item, videos: ["https://www.tiktok.com/@x/video/1"] };
+    render(<MediaCard item={itemWithVideos} theme={theme} subtitle={subtitle} />);
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
   it("renders a fallback image when item.thumbnail is set and no resolvedThumbnails", () => {
-    render(<TikTokCard item={{ ...item, thumbnail: "/thumb.jpg" }} theme={theme} subtitle={subtitle} />);
+    render(<MediaCard item={{ ...item, thumbnail: "/thumb.jpg" }} theme={theme} subtitle={subtitle} />);
     expect(screen.getByRole("img")).toHaveAttribute("src", "/thumb.jpg");
   });
 
@@ -62,7 +67,7 @@ describe("TikTokCard", () => {
       "https://cdn.tiktok.com/c.jpg",
     ];
     const { container } = render(
-      <TikTokCard item={item} theme={theme} subtitle={subtitle} resolvedThumbnails={thumbnails} />
+      <MediaCard item={item} theme={theme} subtitle={subtitle} resolvedThumbnails={thumbnails} />
     );
     expect(container.querySelectorAll("img").length).toBe(3);
   });
@@ -70,7 +75,7 @@ describe("TikTokCard", () => {
   it("prefers resolvedThumbnails over item.thumbnail", () => {
     const thumbnails = ["https://cdn.tiktok.com/a.jpg", "https://cdn.tiktok.com/b.jpg"];
     const { container } = render(
-      <TikTokCard
+      <MediaCard
         item={{ ...item, thumbnail: "/fallback.jpg" }}
         theme={theme}
         subtitle={subtitle}
@@ -83,7 +88,20 @@ describe("TikTokCard", () => {
   });
 
   it("applies the theme buttonBg as background-color", () => {
-    const { container } = render(<TikTokCard item={item} theme={theme} subtitle={subtitle} />);
+    const { container } = render(<MediaCard item={item} theme={theme} subtitle={subtitle} />);
     expect(container.firstChild).toHaveStyle({ backgroundColor: theme.buttonBg });
+  });
+
+  it("renders as a direct link when no platform is set", () => {
+    const genericItem: CardLink = { type: LinkType.Card, label: "Roadmap", url: "./roadmap.html" };
+    render(<MediaCard item={genericItem} theme={theme} subtitle="" />);
+    const links = screen.getAllByRole("link");
+    expect(links.some(l => l.getAttribute("href") === "./roadmap.html")).toBe(true);
+  });
+
+  it("does not open a modal for no-platform cards", () => {
+    const genericItem: CardLink = { type: LinkType.Card, label: "Roadmap", url: "./roadmap.html" };
+    render(<MediaCard item={genericItem} theme={theme} subtitle="" />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

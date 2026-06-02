@@ -5,7 +5,7 @@ import { fetchTikTokApiData, formatFollowerCount } from "@/lib/tiktok-api";
 import type { TikTokApiResult } from "@/lib/tiktok-api";
 import ProfileHeader from "@/components/ProfileHeader";
 import LinkButton from "@/components/LinkButton";
-import TikTokCard from "@/components/TikTokCard";
+import MediaCard from "@/components/MediaCard";
 import SocialPill from "@/components/SocialPill";
 import TopBar from "@/components/TopBar";
 
@@ -35,8 +35,9 @@ async function resolveCardThumbnails(
 function buildSubtitle(link: CardLink, apiData: TikTokApiResult | null): string {
   const count = apiData?.followerCount ?? link.followerCount;
   const name = link.displayName ?? apiData?.displayName ?? null;
-  const formatted = `${formatFollowerCount(count)} Followers`;
-  return name ? `${name} · ${formatted}` : formatted;
+  const formatted = count !== undefined ? `${formatFollowerCount(count)} Followers` : null;
+  if (name && formatted) return `${name} · ${formatted}`;
+  return name ?? formatted ?? "";
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -79,7 +80,7 @@ export default async function Home() {
                   ? tikTokApiData.videoCoverUrls
                   : thumbnailMap.get(index);
               return (
-                <TikTokCard
+                <MediaCard
                   key={key}
                   item={link}
                   theme={theme}

@@ -34,7 +34,7 @@ export type SocialPlatform =
 
 /**
  * Fields shared by all link types.
- * followerCount is optional on buttons and social pills; required on cards.
+ * followerCount is optional on all link types.
  */
 interface LinkBase {
   /**
@@ -80,8 +80,9 @@ export interface ButtonLink extends LinkBase {
  *      oEmbed API at build time and bakes them into the static HTML.
  *   3. To keep thumbnails fresh, rebuild periodically (or automate via GitHub Actions).
  *
- * FALLBACK: If `videos` is empty/omitted, or if a fetch fails (private video,
- * network error), the card shows the animated stacked-phone placeholder.
+ * FALLBACK: If a fetch fails (private video, network error), the card shows
+ * the animated stacked-phone placeholder. If `videos` is empty/omitted the
+ * placeholder is skipped — set `thumbnail` for a static image instead.
  *
  * MANUAL THUMBNAILS: If you'd rather skip the API fetch, leave `videos` empty
  * and set `thumbnail` to a local path (e.g. "/tiktok-thumb.jpg"). That image
@@ -89,7 +90,12 @@ export interface ButtonLink extends LinkBase {
  */
 export interface CardLink extends LinkBase {
   type: typeof LinkType.Card;
-  platform: SocialPlatform;
+  /**
+   * Social platform for this card. When set, clicking opens a modal with a
+   * platform-specific "Follow on [Platform]" CTA. Omit for a generic card
+   * that links directly to `url` on click.
+   */
+  platform?: SocialPlatform;
   /** Card headline (e.g. "TikTok") */
   label: string;
   /**
@@ -97,8 +103,9 @@ export interface CardLink extends LinkBase {
    * Used as the static fallback when the TikTok API is not configured.
    * When TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET / TIKTOK_REFRESH_TOKEN are set
    * as env vars, the live count from the API is used instead.
+   * Omit to hide the follower count entirely.
    */
-  followerCount: number;
+  followerCount?: number;
   /**
    * Up to 3 public TikTok video URLs for the stacked thumbnail preview.
    * Thumbnails are fetched at build time — no API key required.
@@ -214,6 +221,11 @@ export const config: SiteConfig = {
 
   // ── Link items ────────────────────────────────────────────────────────────
   links: [
+      {
+            type: LinkType.Card,
+            label: "Free Cybersecurity Roadmap 2026",
+            url: "./learning_about_cyber_security.html",
+          },
     // 1 · Plain button
     {
       type: LinkType.Button,
