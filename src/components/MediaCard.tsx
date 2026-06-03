@@ -203,7 +203,7 @@ function MediaModal({
         {/* Follow button */}
         <div className="px-5 pb-8 pt-1">
           <a
-            href={item.url}
+            href={item.url ?? ""}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full py-3.5 rounded-full text-center text-sm font-semibold text-white bg-black hover:opacity-80 transition-opacity"
@@ -263,7 +263,7 @@ export default function MediaCard({ item, theme, subtitle, resolvedThumbnails }:
           </button>
         ) : (
           <a
-            href={item.url}
+            href={item.url ?? ""}
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => setHovered(true)}
@@ -289,7 +289,7 @@ export default function MediaCard({ item, theme, subtitle, resolvedThumbnails }:
             <p className="text-xs mt-0.5" style={{ color: theme.subtextColor }}>{subtitle}</p>
           </div>
           <ShareButton
-            url={item.url}
+            url={item.url ?? ""}
             title={item.label}
             color={theme.textColor}
             className="ml-2"

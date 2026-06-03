@@ -60,7 +60,7 @@ describe("config.links", () => {
       });
   });
 
-  it("card items have a label and url; followerCount is optional but valid when present", () => {
+  it("card items have a label; url or platform+handle is required; followerCount is optional but valid when present", () => {
     config.links
       .filter((l): l is CardLink => l.type === LinkType.Card)
       .forEach((link) => {
@@ -69,7 +69,10 @@ describe("config.links", () => {
           expect(typeof link.followerCount).toBe("number");
           expect(link.followerCount).toBeGreaterThanOrEqual(0);
         }
-        expect(link.url).toBeTruthy();
+        // url is optional when platform+handle are set (derived at build time)
+        const hasExplicitUrl = Boolean(link.url);
+        const hasDerivedUrl = Boolean(link.platform && link.handle);
+        expect(hasExplicitUrl || hasDerivedUrl).toBe(true);
       });
   });
 

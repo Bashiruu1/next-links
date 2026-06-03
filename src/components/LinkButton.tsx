@@ -1,7 +1,7 @@
 "use client";
 
 import type { ButtonLink, SiteConfig } from "@/config/links";
-import { formatFollowerCount } from "@/lib/tiktok-api";
+import { formatFollowerCount } from "@/lib/platforms/utils";
 import ShareButton from "@/components/ShareButton";
 
 interface LinkButtonProps {
