@@ -14,11 +14,17 @@ interface TikTokTokenResponse {
 export class TikTokClient implements PlatformClient<TikTokAuthConfig> {
   readonly platform: SocialPlatform = "tiktok";
   readonly authConfig: TikTokAuthConfig;
+  readonly baseAddress: string;
   // Cached per-instance so both get() and post() share one token refresh per build.
   private tokenPromise: Promise<string | null> | null = null;
 
-  constructor(authConfig: TikTokAuthConfig) {
+  constructor(authConfig: TikTokAuthConfig, baseAddress = "https://www.tiktok.com") {
     this.authConfig = authConfig;
+    this.baseAddress = baseAddress;
+  }
+
+  profileUrl(handle: string): string {
+    return `${this.baseAddress}/${handle}`;
   }
 
   private getToken(): Promise<string | null> {

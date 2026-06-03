@@ -15,6 +15,7 @@ import TopBar from "@/components/TopBar";
 interface CardResult {
   platformData: PlatformData;
   thumbnails: string[];
+  resolvedUrl: string;
 }
 
 async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResult>> {
@@ -26,19 +27,21 @@ async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResul
 
       let platformData = EMPTY_PLATFORM_DATA;
       let thumbnails: string[] = [];
+      let resolvedUrl = link.url ?? "";
 
       if (link.platform && link.handle) {
         const service = platformRegistry[link.platform];
         if (service) {
           platformData = await service.fetch(link.handle);
           thumbnails = platformData.recentVideoUrls;
+          if (!resolvedUrl) resolvedUrl = service.profileUrl(link.handle);
         }
       } else if (link.videos?.length) {
         // Deprecated: backwards compat for hardcoded video URLs
         thumbnails = await fetchThumbnailsFromUrls(link.videos);
       }
 
-      cardMap.set(index, { platformData, thumbnails });
+      cardMap.set(index, { platformData, thumbnails, resolvedUrl });
     })
   );
 
@@ -75,7 +78,7 @@ export default async function Home() {
         {/* Link items */}
         <div className="flex flex-col space-y-5 mt-2">
           {links.map((link, index) => {
-            const key = `${link.type}-${link.url}`;
+            const key = `${link.type}-${index}`;
 
             if (link.type === LinkType.Button) {
               return <LinkButton key={key} item={link} theme={theme} />;
@@ -84,10 +87,11 @@ export default async function Home() {
             if (link.type === LinkType.Card) {
               const cardResult = cardDataMap.get(index);
               const platformData = cardResult?.platformData ?? EMPTY_PLATFORM_DATA;
+              const itemWithUrl = { ...link, url: cardResult?.resolvedUrl ?? link.url ?? "" };
               return (
                 <MediaCard
                   key={key}
-                  item={link}
+                  item={itemWithUrl}
                   theme={theme}
                   subtitle={buildSubtitle(link, platformData)}
                   resolvedThumbnails={cardResult?.thumbnails}

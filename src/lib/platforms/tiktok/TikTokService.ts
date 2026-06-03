@@ -27,6 +27,10 @@ export class TikTokService implements PlatformService {
 
   constructor(private client: TikTokClient) {}
 
+  profileUrl(handle: string): string {
+    return this.client.profileUrl(handle);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async fetch(_: string): Promise<PlatformData> {
     try {

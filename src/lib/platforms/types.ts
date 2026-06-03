@@ -17,10 +17,13 @@ export const EMPTY_PLATFORM_DATA: PlatformData = {
 export interface PlatformClient<TAuthConfig extends Record<string, string>> {
   readonly platform: SocialPlatform;
   readonly authConfig: TAuthConfig;
+  readonly baseAddress: string;
   get<TResponse>(endpoint: string, params?: Record<string, string>): Promise<TResponse | null>;
+  profileUrl(handle: string): string;
 }
 
 export interface PlatformService {
   readonly platform: SocialPlatform;
   fetch(handle: string): Promise<PlatformData>;
+  profileUrl(handle: string): string;
 }

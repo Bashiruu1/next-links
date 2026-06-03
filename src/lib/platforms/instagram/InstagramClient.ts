@@ -8,9 +8,15 @@ export interface InstagramAuthConfig extends Record<string, string> {
 export class InstagramClient implements PlatformClient<InstagramAuthConfig> {
   readonly platform: SocialPlatform = "instagram";
   readonly authConfig: InstagramAuthConfig;
+  readonly baseAddress: string;
 
-  constructor(authConfig: InstagramAuthConfig) {
+  constructor(authConfig: InstagramAuthConfig, baseAddress = "https://www.instagram.com") {
     this.authConfig = authConfig;
+    this.baseAddress = baseAddress;
+  }
+
+  profileUrl(handle: string): string {
+    return `${this.baseAddress}/${handle.replace(/^@/, "")}`;
   }
 
   async get<TResponse>(

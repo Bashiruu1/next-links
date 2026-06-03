@@ -121,8 +121,12 @@ export interface CardLink extends LinkBase {
    * Leave as "" to show the stacked-phone placeholder instead.
    */
   thumbnail?: string;
-  /** Destination URL */
-  url: string;
+  /**
+   * Destination URL. Optional when `platform` + `handle` are both set —
+   * the URL is derived automatically (e.g. tiktok.com/@handle).
+   * Set explicitly to override the derived URL.
+   */
+  url?: string;
 }
 
 /** A pill button that shows a small circular avatar on the left — ideal for Instagram, Twitter, etc. */
@@ -254,7 +258,6 @@ export const config: SiteConfig = {
       displayName: "♪ Sarah Bashir 🌟",
       followerCount: 17500, // static fallback shown when API is not configured
       thumbnail: "",
-      url: "https://www.tiktok.com/@sarah.rh.bashir",
     },
 
     // 3 · Instagram social pill

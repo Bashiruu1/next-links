@@ -25,6 +25,10 @@ export class InstagramService implements PlatformService {
 
   constructor(private client: InstagramClient) {}
 
+  profileUrl(handle: string): string {
+    return this.client.profileUrl(handle);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async fetch(_: string): Promise<PlatformData> {
     try {
