@@ -71,58 +71,53 @@ export interface ButtonLink extends LinkBase {
 }
 
 /**
- * A tall card that shows up to 3 stacked video thumbnails — great for TikTok/YouTube.
+ * A tall card that shows up to 3 stacked video thumbnails — great for TikTok/Instagram.
  *
- * HOW THUMBNAILS WORK (no API key needed):
+ * HOW THUMBNAILS WORK (recommended):
  *
- *   1. Add up to 3 public TikTok video URLs to the `videos` array below.
- *   2. Run `npm run build` — Next.js fetches thumbnails from TikTok's public
- *      oEmbed API at build time and bakes them into the static HTML.
- *   3. To keep thumbnails fresh, rebuild periodically (or automate via GitHub Actions).
+ *   1. Set `platform` to the platform name (e.g. "tiktok") and `handle` to your
+ *      username (e.g. "@sarah.rh.bashir").
+ *   2. Configure the platform's env vars (see src/lib/platforms/<platform>/).
+ *   3. Run `npm run build` — the platform service fetches live follower count,
+ *      recent video thumbnails, and profile image at build time.
+ *   4. To keep data fresh, rebuild periodically (automated via GitHub Actions cron).
  *
- * FALLBACK: If a fetch fails (private video, network error), the card shows
- * the animated stacked-phone placeholder. If `videos` is empty/omitted the
- * placeholder is skipped — set `thumbnail` for a static image instead.
+ * FALLBACK: When env vars are not set, the card shows the stacked-phone placeholder
+ * and falls back to the static `followerCount` / `displayName` in this config.
  *
- * MANUAL THUMBNAILS: If you'd rather skip the API fetch, leave `videos` empty
- * and set `thumbnail` to a local path (e.g. "/tiktok-thumb.jpg"). That image
- * will fill the full card instead of the stacked layout.
+ * LEGACY: The `videos` field (hardcoded TikTok URLs) still works but is deprecated.
+ * Prefer `platform` + `handle` so the config stays human-editable.
  */
 export interface CardLink extends LinkBase {
   type: typeof LinkType.Card;
   /**
-   * Social platform for this card. When set, clicking opens a modal with a
-   * platform-specific "Follow on [Platform]" CTA. Omit for a generic card
-   * that links directly to `url` on click.
+   * Social platform for this card. When set alongside `handle`, follower count,
+   * recent video thumbnails, and profile image are fetched at build time.
+   * Also controls the "Follow on [Platform]" CTA in the click-through modal.
    */
   platform?: SocialPlatform;
+  /**
+   * Your platform handle (e.g. "@sarah.rh.bashir"). Required for build-time
+   * data fetching. Ignored when the platform's env vars are not configured.
+   */
+  handle?: string;
   /** Card headline (e.g. "TikTok") */
   label: string;
   /**
-   * Raw follower count shown in the card footer (e.g. 17500 → "17.5K Followers").
-   * Used as the static fallback when the TikTok API is not configured.
-   * When TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET / TIKTOK_REFRESH_TOKEN are set
-   * as env vars, the live count from the API is used instead.
+   * Static fallback follower count (e.g. 17500 → "17.5K Followers").
+   * Shown when the platform fetch fails or env vars are not configured.
    * Omit to hide the follower count entirely.
    */
   followerCount?: number;
   /**
-   * Up to 3 public TikTok video URLs for the stacked thumbnail preview.
-   * Thumbnails are fetched at build time — no API key required.
-   *
-   * Order: [left (back), centre (front/featured), right (back)]
-   *
-   * Example:
-   *   videos: [
-   *     "https://www.tiktok.com/@sarah.bashir/video/7123456789012345678",
-   *     "https://www.tiktok.com/@sarah.bashir/video/7234567890123456789",
-   *     "https://www.tiktok.com/@sarah.bashir/video/7345678901234567890",
-   *   ]
+   * @deprecated Use `platform` + `handle` instead.
+   * Up to 3 public TikTok video URLs fetched via oEmbed at build time.
+   * Still works, but hardcodes video URLs that go stale as you post new content.
    */
   videos?: string[];
   /**
    * Optional fallback: path to a single local thumbnail image in /public.
-   * Used only when `videos` is empty/omitted.
+   * Used only when no thumbnails are resolved (no handle, no videos).
    * Leave as "" to show the stacked-phone placeholder instead.
    */
   thumbnail?: string;
@@ -248,21 +243,17 @@ export const config: SiteConfig = {
     },
 
     // 2 · TikTok feature card
-    // Add your 3 most recent (or most popular) TikTok video URLs below.
-    // Thumbnails are fetched automatically at build time — no API key needed.
-    // Leave the array empty to show the stacked-phone placeholder instead.
+    // Set TIKTOK_CLIENT_KEY / TIKTOK_CLIENT_SECRET / TIKTOK_REFRESH_TOKEN as
+    // GitHub Actions secrets to enable live follower count + video covers.
+    // Without those env vars the card falls back to the static values below.
     {
       type: LinkType.Card,
       platform: "tiktok",
+      handle: "@sarah.rh.bashir",
       label: "TikTok",
       displayName: "♪ Sarah Bashir 🌟",
-      followerCount: 17500,
-      videos: [
-        "https://www.tiktok.com/@sarah.rh.bashir/video/7635667231413832968",
-        "https://www.tiktok.com/@sarah.rh.bashir/video/7635417474216807687",
-        "https://www.tiktok.com/@sarah.rh.bashir/video/7635386293085539592",
-      ],
-      thumbnail: "", // fallback single image (optional)
+      followerCount: 17500, // static fallback shown when API is not configured
+      thumbnail: "",
       url: "https://www.tiktok.com/@sarah.rh.bashir",
     },
 

@@ -1,8 +1,9 @@
 import { config, LinkType } from "@/config/links";
 import type { CardLink, LinkItem } from "@/config/links";
-import { fetchTikTokThumbnails } from "@/lib/tiktok";
-import { fetchTikTokApiData, formatFollowerCount } from "@/lib/tiktok-api";
-import type { TikTokApiResult } from "@/lib/tiktok-api";
+import { platformRegistry } from "@/lib/platforms/registry";
+import { formatFollowerCount } from "@/lib/platforms/utils";
+import { EMPTY_PLATFORM_DATA, type PlatformData } from "@/lib/platforms/types";
+import { fetchThumbnailsFromUrls } from "@/lib/platforms/tiktok/TikTokService";
 import ProfileHeader from "@/components/ProfileHeader";
 import LinkButton from "@/components/LinkButton";
 import MediaCard from "@/components/MediaCard";
@@ -10,31 +11,43 @@ import SocialPill from "@/components/SocialPill";
 import TopBar from "@/components/TopBar";
 
 // ── Data resolution ───────────────────────────────────────────────────────────
-//
-// Two data sources run in parallel (cached by Vercel ISR, revalidated daily):
-//   1. TikTok API v2 (when env vars are set) — live follower count + cover images
-//   2. TikTok oEmbed (fallback) — thumbnails from manually specified video URLs
 
-async function resolveCardThumbnails(
-  links: LinkItem[]
-): Promise<Map<number, string[]>> {
-  const thumbnailMap = new Map<number, string[]>();
+interface CardResult {
+  platformData: PlatformData;
+  thumbnails: string[];
+}
+
+async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResult>> {
+  const cardMap = new Map<number, CardResult>();
 
   await Promise.all(
     links.map(async (link, index) => {
-      if (link.type === LinkType.Card && link.videos?.length) {
-        const thumbnails = await fetchTikTokThumbnails(link.videos);
-        thumbnailMap.set(index, thumbnails);
+      if (link.type !== LinkType.Card) return;
+
+      let platformData = EMPTY_PLATFORM_DATA;
+      let thumbnails: string[] = [];
+
+      if (link.platform && link.handle) {
+        const service = platformRegistry[link.platform];
+        if (service) {
+          platformData = await service.fetch(link.handle);
+          thumbnails = platformData.recentVideoUrls;
+        }
+      } else if (link.videos?.length) {
+        // Deprecated: backwards compat for hardcoded video URLs
+        thumbnails = await fetchThumbnailsFromUrls(link.videos);
       }
+
+      cardMap.set(index, { platformData, thumbnails });
     })
   );
 
-  return thumbnailMap;
+  return cardMap;
 }
 
-function buildSubtitle(link: CardLink, apiData: TikTokApiResult | null): string {
-  const count = apiData?.followerCount ?? link.followerCount;
-  const name = link.displayName ?? apiData?.displayName ?? null;
+function buildSubtitle(link: CardLink, data: PlatformData): string {
+  const count = data.followerCount > 0 ? data.followerCount : link.followerCount;
+  const name = link.displayName ?? (data.displayName || null);
   const formatted = count !== undefined ? `${formatFollowerCount(count)} Followers` : null;
   if (name && formatted) return `${name} · ${formatted}`;
   return name ?? formatted ?? "";
@@ -42,16 +55,12 @@ function buildSubtitle(link: CardLink, apiData: TikTokApiResult | null): string 
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
-export const revalidate = 86400; // re-fetch TikTok data once per day
+export const revalidate = 86400; // re-fetch platform data once per day
 
 export default async function Home() {
   const { profile, socials, links, theme, meta } = config;
 
-  // Both fetches run in parallel at build time
-  const [tikTokApiData, thumbnailMap] = await Promise.all([
-    fetchTikTokApiData(),       // null when env vars not set
-    resolveCardThumbnails(links), // oEmbed fallback
-  ]);
+  const cardDataMap = await resolveCardData(links);
 
   return (
     <main className="links-page min-h-screen w-full">
@@ -73,19 +82,15 @@ export default async function Home() {
             }
 
             if (link.type === LinkType.Card) {
-              const isTikTok = link.platform === "tiktok";
-              // API covers take priority; fall back to oEmbed thumbnails
-              const resolvedThumbnails =
-                isTikTok && tikTokApiData
-                  ? tikTokApiData.videoCoverUrls
-                  : thumbnailMap.get(index);
+              const cardResult = cardDataMap.get(index);
+              const platformData = cardResult?.platformData ?? EMPTY_PLATFORM_DATA;
               return (
                 <MediaCard
                   key={key}
                   item={link}
                   theme={theme}
-                  subtitle={buildSubtitle(link, isTikTok ? tikTokApiData : null)}
-                  resolvedThumbnails={resolvedThumbnails}
+                  subtitle={buildSubtitle(link, platformData)}
+                  resolvedThumbnails={cardResult?.thumbnails}
                 />
               );
             }

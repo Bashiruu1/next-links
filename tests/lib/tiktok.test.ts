@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchTikTokThumbnails } from "@/lib/tiktok";
+import { fetchThumbnailsFromUrls } from "@/lib/platforms/tiktok/TikTokService";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -23,15 +23,15 @@ beforeEach(() => {
 
 // ── tests ─────────────────────────────────────────────────────────────────────
 
-describe("fetchTikTokThumbnails", () => {
+describe("fetchThumbnailsFromUrls", () => {
   it("returns an empty array immediately when given no URLs", async () => {
-    const result = await fetchTikTokThumbnails([]);
+    const result = await fetchThumbnailsFromUrls([]);
     expect(result).toEqual([]);
   });
 
   it("returns an empty array when given undefined/null", async () => {
     // @ts-expect-error — deliberate misuse to test defensive code
-    const result = await fetchTikTokThumbnails(undefined);
+    const result = await fetchThumbnailsFromUrls(undefined);
     expect(result).toEqual([]);
   });
 
@@ -39,7 +39,7 @@ describe("fetchTikTokThumbnails", () => {
     // No fetch should be called for non-TikTok URLs
     const spy = vi.fn();
     vi.stubGlobal("fetch", spy);
-    const result = await fetchTikTokThumbnails(["https://example.com/video/123"]);
+    const result = await fetchThumbnailsFromUrls(["https://example.com/video/123"]);
     expect(result).toEqual([""]);
     expect(spy).not.toHaveBeenCalled();
   });
@@ -50,7 +50,7 @@ describe("fetchTikTokThumbnails", () => {
       json: { thumbnail_url: "https://cdn.tiktok.com/thumb.jpg", title: "test" },
     });
 
-    const result = await fetchTikTokThumbnails([
+    const result = await fetchThumbnailsFromUrls([
       "https://www.tiktok.com/@user/video/1234567890",
     ]);
 
@@ -60,7 +60,7 @@ describe("fetchTikTokThumbnails", () => {
   it("returns '' when the oEmbed response contains no thumbnail_url", async () => {
     mockFetch({ ok: true, json: { title: "no thumb here" } });
 
-    const result = await fetchTikTokThumbnails([
+    const result = await fetchThumbnailsFromUrls([
       "https://www.tiktok.com/@user/video/1234567890",
     ]);
 
@@ -70,7 +70,7 @@ describe("fetchTikTokThumbnails", () => {
   it("returns '' gracefully when the HTTP response is not ok", async () => {
     mockFetch({ ok: false });
 
-    const result = await fetchTikTokThumbnails([
+    const result = await fetchThumbnailsFromUrls([
       "https://www.tiktok.com/@user/video/1234567890",
     ]);
 
@@ -80,7 +80,7 @@ describe("fetchTikTokThumbnails", () => {
   it("returns '' gracefully when fetch throws a network error", async () => {
     mockFetchThrows(new Error("Network failure"));
 
-    const result = await fetchTikTokThumbnails([
+    const result = await fetchThumbnailsFromUrls([
       "https://www.tiktok.com/@user/video/1234567890",
     ]);
 
@@ -109,7 +109,7 @@ describe("fetchTikTokThumbnails", () => {
         })
     );
 
-    const result = await fetchTikTokThumbnails([
+    const result = await fetchThumbnailsFromUrls([
       "https://www.tiktok.com/@user/video/1",
       "https://www.tiktok.com/@user/video/2",
       "https://www.tiktok.com/@user/video/3",
@@ -125,7 +125,7 @@ describe("fetchTikTokThumbnails", () => {
     });
 
     const videoUrl = "https://www.tiktok.com/@sarah.rh.bashir/video/7123456789";
-    await fetchTikTokThumbnails([videoUrl]);
+    await fetchThumbnailsFromUrls([videoUrl]);
 
     const calledUrl: string = (fetchSpy as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(calledUrl).toContain("tiktok.com/oembed");

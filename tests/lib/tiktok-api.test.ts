@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { formatFollowerCount, fetchTikTokApiData } from "@/lib/tiktok-api";
+import { formatFollowerCount } from "@/lib/platforms/utils";
+import { TikTokClient } from "@/lib/platforms/tiktok/TikTokClient";
+import { TikTokService } from "@/lib/platforms/tiktok/TikTokService";
+import { EMPTY_PLATFORM_DATA } from "@/lib/platforms/types";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -39,6 +42,16 @@ const ENV = {
   TIKTOK_REFRESH_TOKEN: "test-refresh-token",
 };
 
+const AUTH_CONFIG = {
+  clientKeyEnvKey: "TIKTOK_CLIENT_KEY",
+  clientSecretEnvKey: "TIKTOK_CLIENT_SECRET",
+  refreshTokenEnvKey: "TIKTOK_REFRESH_TOKEN",
+};
+
+function makeService() {
+  return new TikTokService(new TikTokClient(AUTH_CONFIG));
+}
+
 const TOKEN_RESPONSE = {
   ok: true,
   json: { access_token: "test-access-token", refresh_token: "new-refresh" },
@@ -47,7 +60,13 @@ const TOKEN_RESPONSE = {
 const USER_RESPONSE = {
   ok: true,
   json: {
-    data: { user: { display_name: "Sarah Bashir", follower_count: 17500 } },
+    data: {
+      user: {
+        display_name: "Sarah Bashir",
+        follower_count: 17500,
+        avatar_url: "https://p16-sign.tiktokcdn.com/avatar.jpg",
+      },
+    },
   },
 };
 
@@ -98,16 +117,16 @@ describe("formatFollowerCount", () => {
   });
 });
 
-// ── fetchTikTokApiData ────────────────────────────────────────────────────────
+// ── TikTokService.fetch ───────────────────────────────────────────────────────
 
-describe("fetchTikTokApiData", () => {
+describe("TikTokService.fetch", () => {
   let restoreEnv: () => void;
 
   afterEach(() => {
     restoreEnv?.();
   });
 
-  it("returns null when env vars are not set", async () => {
+  it("returns EMPTY_PLATFORM_DATA when env vars are not set", async () => {
     restoreEnv = stubEnv({
       TIKTOK_CLIENT_KEY: "",
       TIKTOK_CLIENT_SECRET: "",
@@ -117,46 +136,47 @@ describe("fetchTikTokApiData", () => {
     delete process.env.TIKTOK_CLIENT_SECRET;
     delete process.env.TIKTOK_REFRESH_TOKEN;
 
-    const result = await fetchTikTokApiData();
-    expect(result).toBeNull();
+    const result = await makeService().fetch("@testuser");
+    expect(result).toEqual(EMPTY_PLATFORM_DATA);
   });
 
-  it("returns null when token refresh fails", async () => {
+  it("returns EMPTY_PLATFORM_DATA when token refresh fails", async () => {
     restoreEnv = stubEnv(ENV);
     mockFetchSequence([{ ok: false, text: "Unauthorized" }]);
 
-    const result = await fetchTikTokApiData();
-    expect(result).toBeNull();
+    const result = await makeService().fetch("@testuser");
+    expect(result).toEqual(EMPTY_PLATFORM_DATA);
   });
 
-  it("returns null when user info fetch fails", async () => {
+  it("returns EMPTY_PLATFORM_DATA when user info fetch fails", async () => {
     restoreEnv = stubEnv(ENV);
-    mockFetchSequence([TOKEN_RESPONSE, { ok: false }]);
+    mockFetchSequence([TOKEN_RESPONSE, { ok: false }, VIDEO_RESPONSE]);
 
-    const result = await fetchTikTokApiData();
-    expect(result).toBeNull();
+    const result = await makeService().fetch("@testuser");
+    expect(result).toEqual(EMPTY_PLATFORM_DATA);
   });
 
-  it("returns result with empty video covers when video list fails", async () => {
+  it("returns result with empty recentVideoUrls when video list fails", async () => {
     restoreEnv = stubEnv(ENV);
     mockFetchSequence([TOKEN_RESPONSE, USER_RESPONSE, { ok: false }]);
 
-    const result = await fetchTikTokApiData();
-    expect(result).not.toBeNull();
-    expect(result?.followerCount).toBe(17500);
-    expect(result?.displayName).toBe("Sarah Bashir");
-    expect(result?.videoCoverUrls).toEqual([]);
+    const result = await makeService().fetch("@testuser");
+    expect(result).not.toEqual(EMPTY_PLATFORM_DATA);
+    expect(result.followerCount).toBe(17500);
+    expect(result.displayName).toBe("Sarah Bashir");
+    expect(result.recentVideoUrls).toEqual([]);
   });
 
-  it("returns full result on success", async () => {
+  it("returns full PlatformData on success", async () => {
     restoreEnv = stubEnv(ENV);
     mockFetchSequence([TOKEN_RESPONSE, USER_RESPONSE, VIDEO_RESPONSE]);
 
-    const result = await fetchTikTokApiData();
+    const result = await makeService().fetch("@testuser");
     expect(result).toEqual({
       displayName: "Sarah Bashir",
       followerCount: 17500,
-      videoCoverUrls: [
+      profileImageUrl: "https://p16-sign.tiktokcdn.com/avatar.jpg",
+      recentVideoUrls: [
         "https://cdn.tiktok.com/a.jpg",
         "https://cdn.tiktok.com/b.jpg",
         "https://cdn.tiktok.com/c.jpg",
@@ -168,7 +188,7 @@ describe("fetchTikTokApiData", () => {
     restoreEnv = stubEnv(ENV);
     const spy = mockFetchSequence([TOKEN_RESPONSE, USER_RESPONSE, VIDEO_RESPONSE]);
 
-    await fetchTikTokApiData();
+    await makeService().fetch("@testuser");
 
     const [tokenUrl, tokenInit] = spy.mock.calls[0] as [string, RequestInit];
     expect(tokenUrl).toBe("https://open.tiktokapis.com/v2/oauth/token/");
@@ -181,7 +201,7 @@ describe("fetchTikTokApiData", () => {
     restoreEnv = stubEnv(ENV);
     const spy = mockFetchSequence([TOKEN_RESPONSE, USER_RESPONSE, VIDEO_RESPONSE]);
 
-    await fetchTikTokApiData();
+    await makeService().fetch("@testuser");
 
     const [userUrl, userInit] = spy.mock.calls[1] as [string, RequestInit];
     expect(userUrl).toContain("/v2/user/info/");
@@ -190,11 +210,11 @@ describe("fetchTikTokApiData", () => {
     );
   });
 
-  it("calls the video list endpoint with Bearer token", async () => {
+  it("calls the video list endpoint with Bearer token and POST method", async () => {
     restoreEnv = stubEnv(ENV);
     const spy = mockFetchSequence([TOKEN_RESPONSE, USER_RESPONSE, VIDEO_RESPONSE]);
 
-    await fetchTikTokApiData();
+    await makeService().fetch("@testuser");
 
     const [videoUrl, videoInit] = spy.mock.calls[2] as [string, RequestInit];
     expect(videoUrl).toContain("/v2/video/list/");
