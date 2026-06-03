@@ -220,11 +220,11 @@ export const config: SiteConfig = {
 
   // ── Link items ────────────────────────────────────────────────────────────
   links: [
-      {
-            type: LinkType.Card,
-            label: "Free Cybersecurity Roadmap 2026",
-            url: "./learning_about_cyber_security.html",
-          },
+    {
+        type: LinkType.Card,
+        label: "Free Cybersecurity Roadmap 2026",
+        url: "./learning_about_cyber_security.html",
+    },
     // 1 · Plain button
     {
       type: LinkType.Button,
