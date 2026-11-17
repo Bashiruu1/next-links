@@ -28,7 +28,7 @@ export default function RootLayout({
           />
         )}
         <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <meta name="tiktok-developers-site-verification" content="dbnHRXbqi1jujZiuMUMMI46t4PV170md" />
+        <meta name="tiktok-developers-site-verification" content="ieermp52zx8ebJan0a7oRq7sDmoGe8ko" />
       </head>
       <body className="h-full font-sans antialiased">{children}</body>
     </html>
