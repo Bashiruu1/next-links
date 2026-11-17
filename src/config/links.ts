@@ -285,8 +285,7 @@ export const config: SiteConfig = {
   meta: {
     title: "Sarah Bashir | Links",
     description: "Creating our dream life, one brick at a time! 🏠✨",
-    // Update these before deploying:
-    url: "https://Bashiruu1.github.io/next-links",
+    url: "https://www.sarahbashir.com",
     repoUrl: "https://github.com/Bashiruu1/next-links",
   },
 };
