@@ -16,6 +16,7 @@ interface CardResult {
   platformData: PlatformData;
   thumbnails: string[];
   resolvedUrl: string;
+  apiCalled: boolean;
 }
 
 async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResult>> {
@@ -28,10 +29,12 @@ async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResul
       let platformData = EMPTY_PLATFORM_DATA;
       let thumbnails: string[] = [];
       let resolvedUrl = link.url ?? "";
+      let apiCalled = false;
 
       if (link.platform && link.handle) {
         const service = platformRegistry[link.platform];
         if (service) {
+          apiCalled = true;
           platformData = await service.fetch(link.handle);
           thumbnails = platformData.recentVideoUrls;
           if (!resolvedUrl) resolvedUrl = service.profileUrl(link.handle);
@@ -41,17 +44,17 @@ async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResul
         thumbnails = await fetchThumbnailsFromUrls(link.videos);
       }
 
-      cardMap.set(index, { platformData, thumbnails, resolvedUrl });
+      cardMap.set(index, { platformData, thumbnails, resolvedUrl, apiCalled });
     })
   );
 
   return cardMap;
 }
 
-function buildSubtitle(link: CardLink, data: PlatformData): string {
-  const count = data.followerCount > 0 ? data.followerCount : link.followerCount;
+function buildSubtitle(link: CardLink, data: PlatformData, apiCalled: boolean): string {
+  const count = apiCalled ? data.followerCount : link.followerCount;
   const name = link.displayName ?? (data.displayName || null);
-  const formatted = count !== undefined ? `${formatFollowerCount(count)} Followers` : null;
+  const formatted = count !== undefined && count !== null ? `${formatFollowerCount(count)} Followers` : null;
   if (name && formatted) return `${name} · ${formatted}`;
   return name ?? formatted ?? "";
 }
@@ -93,7 +96,7 @@ export default async function Home() {
                   key={key}
                   item={itemWithUrl}
                   theme={theme}
-                  subtitle={buildSubtitle(link, platformData)}
+                  subtitle={buildSubtitle(link, platformData, cardResult?.apiCalled ?? false)}
                   resolvedThumbnails={cardResult?.thumbnails}
                 />
               );
