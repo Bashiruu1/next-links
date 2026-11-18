@@ -23,6 +23,7 @@
 //   3. Trigger a rebuild — live TikTok data will appear on your page
 // ─────────────────────────────────────────────────────────────────────────────
 
+import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as http from "node:http";
 import * as path from "node:path";
@@ -30,7 +31,7 @@ import { exec } from "node:child_process";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const REDIRECT_URI = "http://localhost:3000/callback";
+const REDIRECT_URI = process.env.TIKTOK_REDIRECT_URI ?? "http://localhost:3000/callback";
 const TOKEN_ENDPOINT = "https://open.tiktokapis.com/v2/oauth/token/";
 const AUTH_BASE = "https://www.tiktok.com/v2/auth/authorize";
 const SCOPES = "user.info.basic,user.info.stats,video.list";
@@ -78,6 +79,14 @@ if (!clientSecret) {
   process.exit(1);
 }
 
+// ── PKCE ─────────────────────────────────────────────────────────────────────
+
+const codeVerifier = crypto.randomBytes(48).toString("base64url");
+const codeChallenge = crypto
+  .createHash("sha256")
+  .update(codeVerifier)
+  .digest("base64url");
+
 // ── Build auth URL ────────────────────────────────────────────────────────────
 
 const authParams = new URLSearchParams({
@@ -85,6 +94,8 @@ const authParams = new URLSearchParams({
   response_type: "code",
   scope: SCOPES,
   redirect_uri: REDIRECT_URI,
+  code_challenge: codeChallenge,
+  code_challenge_method: "S256",
 });
 const authUrl = `${AUTH_BASE}?${authParams.toString()}`;
 
@@ -96,7 +107,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const url = new URL(req.url, `http://localhost:3000`);
+  const url = new URL(req.url, REDIRECT_URI);
   const error = url.searchParams.get("error");
   const code = url.searchParams.get("code");
 
@@ -131,6 +142,7 @@ const server = http.createServer(async (req, res) => {
         code,
         grant_type: "authorization_code",
         redirect_uri: REDIRECT_URI,
+        code_verifier: codeVerifier,
       }).toString(),
     });
   } catch (err) {

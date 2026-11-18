@@ -49,7 +49,7 @@ async function resolveCardData(links: LinkItem[]): Promise<Map<number, CardResul
 }
 
 function buildSubtitle(link: CardLink, data: PlatformData): string {
-  const count = data.followerCount > 0 ? data.followerCount : link.followerCount;
+  const count = data.followerCount !== undefined ? data.followerCount : link.followerCount;
   const name = link.displayName ?? (data.displayName || null);
   const formatted = count !== undefined ? `${formatFollowerCount(count)} Followers` : null;
   if (name && formatted) return `${name} · ${formatted}`;
