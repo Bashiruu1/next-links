@@ -109,24 +109,26 @@ export default async function Home() {
       </div>
 
       {/* Footer */}
-      <div className="flex flex-col items-center gap-3 pb-10">
-        <a
-          href={meta.repoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="
-            rounded-full border border-white/30 bg-white/10
-            px-5 py-2.5 text-sm font-medium text-white
-            transition-all hover:bg-white/20
-          "
-        >
-          Get your own next-links page
-        </a>
+      {(meta.showProjectBranding ?? true) && (
+        <div className="flex flex-col items-center gap-3 pb-10">
+          <a
+            href={meta.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              rounded-full border border-white/30 bg-white/10
+              px-5 py-2.5 text-sm font-medium text-white
+              transition-all hover:bg-white/20
+            "
+          >
+            Get your own next-links page
+          </a>
 
-        <p className="text-xs opacity-40" style={{ color: theme.textColor }}>
-          next-links
-        </p>
-      </div>
+          <p className="text-xs opacity-40" style={{ color: theme.textColor }}>
+            next-links
+          </p>
+        </div>
+      )}
     </main>
   );
 }

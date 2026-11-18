@@ -197,6 +197,12 @@ export interface SiteConfig {
      * and share modal so visitors can get their own copy.
      */
     repoUrl: string;
+    /**
+     * Show the "Get your own next-links page" button and project credit
+     * in the page footer. Set to false to hide it on production pages.
+     * Defaults to true when omitted.
+     */
+    showProjectBranding?: boolean;
   };
 }
 
@@ -287,5 +293,6 @@ export const config: SiteConfig = {
     description: "Creating our dream life, one brick at a time! 🏠✨",
     url: "https://www.sarahbashir.com",
     repoUrl: "https://github.com/Bashiruu1/next-links",
+    showProjectBranding: false,
   },
 };
