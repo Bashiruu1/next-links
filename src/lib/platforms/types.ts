@@ -1,14 +1,14 @@
 import type { SocialPlatform } from "@/config/links";
 
 export interface PlatformData {
-  followerCount: number;
+  followerCount: number | undefined;
   recentVideoUrls: string[];
   profileImageUrl: string;
   displayName: string;
 }
 
 export const EMPTY_PLATFORM_DATA: PlatformData = {
-  followerCount: 0,
+  followerCount: undefined,
   recentVideoUrls: [],
   profileImageUrl: "",
   displayName: "",
